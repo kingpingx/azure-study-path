@@ -1,0 +1,468 @@
+<title>Azure Study Path</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style id="page-style">
+*{box-sizing:border-box;}
+:root{
+  color-scheme:light dark;
+  --bg:#f5f6fa;
+  --surface:#ffffff;
+  --surface-2:#eceff6;
+  --border:#dde1ea;
+  --text:#1b2130;
+  --text-dim:#5c6579;
+  --text-faint:#8891a3;
+  --accent:#2f5fae;
+  --accent-soft:#e3ecfb;
+  --gold:#93650f;
+  --gold-soft:#f6ecd8;
+  --danger:#b3413a;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(20,30,60,.07),0 1px 1px rgba(20,30,60,.04);
+  --font-display:'Manrope','Segoe UI',system-ui,sans-serif;
+  --font-body:'Public Sans','Segoe UI',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'Cascadia Code',monospace;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1320;
+    --surface:#171c2c;
+    --surface-2:#1e2436;
+    --border:#2b3348;
+    --text:#e8eaf5;
+    --text-dim:#a6adc4;
+    --text-faint:#727ba0;
+    --accent:#7fb0e8;
+    --accent-soft:#1f3654;
+    --gold:#e3b567;
+    --gold-soft:#3a2e17;
+    --danger:#e08079;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1320;
+  --surface:#171c2c;
+  --surface-2:#1e2436;
+  --border:#2b3348;
+  --text:#e8eaf5;
+  --text-dim:#a6adc4;
+  --text-faint:#727ba0;
+  --accent:#7fb0e8;
+  --accent-soft:#1f3654;
+  --gold:#e3b567;
+  --gold-soft:#3a2e17;
+  --danger:#e08079;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.5;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;}
+[hidden]{display:none!important;}
+a{color:inherit;}
+.wrap{max-width:860px;margin:0 auto;padding:28px 20px 90px;}
+.kicker{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;color:var(--accent);font-weight:600;margin:0 0 10px;}
+h1{font-family:var(--font-display);font-size:clamp(1.6rem,4.5vw,2.3rem);font-weight:800;margin:0 0 10px;text-wrap:balance;letter-spacing:-.01em;}
+.subtitle{color:var(--text-dim);font-size:.98rem;line-height:1.55;max-width:62ch;margin:0 0 22px;}
+.bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;flex:1;}
+.bar.big{height:10px;}
+.bar-fill{height:100%;background:var(--accent);border-radius:inherit;transition:width .25s ease;}
+.overall{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.overall-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--text-dim);}
+.save-status{padding:3px 10px;border-radius:999px;background:var(--surface-2);font-size:.74rem;white-space:nowrap;}
+.status-saving{color:var(--accent);}
+.status-error{color:var(--danger);}
+.status-local{color:var(--text-faint);}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:22px;font-size:.8rem;color:var(--text-dim);}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.pill{display:inline-flex;align-items:center;font-family:var(--font-mono);font-weight:600;font-size:.66rem;letter-spacing:.02em;padding:2px 8px;border-radius:999px;line-height:1.6;}
+.pill.gold{background:var(--gold-soft);color:var(--gold);}
+.navchips{display:flex;gap:8px;overflow-x:auto;padding-block:10px;margin:0 -20px 26px;padding-inline:20px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;}
+.chip{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--text);min-width:126px;}
+.chip:hover,.chip:focus-visible{border-color:var(--accent);}
+.chip.core{border-top:2px solid var(--gold);}
+.chip.complete{border-color:var(--accent);background:var(--accent-soft);}
+.chip-num{font-family:var(--font-mono);font-size:.68rem;color:var(--text-faint);}
+.chip-title{font-size:.76rem;font-weight:600;line-height:1.25;}
+.chip-count{font-family:var(--font-mono);font-size:.7rem;color:var(--text-dim);font-variant-numeric:tabular-nums;}
+.phase{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 22px 18px;margin-bottom:18px;scroll-margin-top:76px;}
+.eyebrow-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.eyebrow{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:var(--accent);font-weight:600;}
+.phase-title{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin:0 0 6px;text-wrap:balance;}
+.phase-desc{color:var(--text-dim);font-size:.9rem;margin:0 0 14px;max-width:64ch;}
+.progress-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.progress-count{font-family:var(--font-mono);font-size:.78rem;color:var(--text-dim);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.items{display:flex;flex-direction:column;gap:2px;}
+.item{display:flex;gap:12px;align-items:flex-start;padding:9px 10px;border-radius:8px;cursor:pointer;}
+.item:hover{background:var(--surface-2);}
+.chk{width:19px;height:19px;flex-shrink:0;margin-top:2px;accent-color:var(--accent);cursor:pointer;}
+.item-body{display:flex;flex-direction:column;gap:4px;}
+.item-text{font-size:.94rem;line-height:1.45;}
+.item.done .item-text{color:var(--text-dim);text-decoration:line-through;text-decoration-color:var(--border);}
+.item-note{font-size:.8rem;color:var(--text-dim);line-height:1.42;padding-left:9px;border-left:2px solid var(--border);}
+footer.page-footer{color:var(--text-faint);font-size:.78rem;text-align:center;margin-top:10px;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){.bar-fill{transition:none;}}
+@media (max-width:480px){
+  .wrap{padding:20px 16px 70px;}
+  .phase{padding:18px 16px 14px;}
+  .chip{min-width:108px;}
+}
+</style>
+<div id="app"></div>
+<script id="state-data" type="application/json">[]</script>
+<script>
+const SELF_SCRIPT = document.currentScript.textContent;
+const STYLE_CSS = document.getElementById('page-style').textContent;
+const FONT_LINK = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">';
+
+const PHASES = [
+  {
+    id:'p1', num:'01', tag:null,
+    title:`Prerequisites and Environment Setup`,
+    desc:`Get your tools and account ready before touching any service.`,
+    items:[
+      {id:'p1i1', text:`Create an Azure account — free tier or your organization's subscription`},
+      {id:'p1i2', text:`Install the Azure CLI (az) and sign in with az login`},
+      {id:'p1i3', text:`Install Azure PowerShell (the Az module) — optional if you prefer the CLI`},
+      {id:'p1i4', text:`Install VS Code extensions: Azure Tools, Azure App Service, Bicep`},
+      {id:'p1i5', text:`Confirm the Azure workload is installed in Visual Studio, for one-click publish`},
+      {id:'p1i6', text:`Tour the Azure Portal — resource groups, subscriptions, the cost blade`},
+      {id:'p1i7', text:`Set up Azure Cloud Shell as a browser-based fallback`},
+    ]
+  },
+  {
+    id:'p2', num:'02', tag:null,
+    title:`Core Cloud Concepts`,
+    desc:`The vocabulary every later phase assumes you already know.`,
+    items:[
+      {id:'p2i1', text:`IaaS vs PaaS vs SaaS — and which Azure services fall where`},
+      {id:'p2i2', text:`Regions, availability zones, and region pairs`},
+      {id:'p2i3', text:`Subscriptions, management groups, and resource groups — the hierarchy`},
+      {id:'p2i4', text:`Azure Resource Manager (ARM) — how every action becomes a resource operation`, deep:true, note:`Understand this first — Bicep, the CLI and the Portal all call the same Resource Manager API underneath.`},
+      {id:'p2i5', text:`Naming conventions and a tagging strategy (env, owner, cost-center)`},
+      {id:'p2i6', text:`Pricing Calculator and Cost Management plus Budgets`},
+      {id:'p2i7', text:`Optional: sit the AZ-900 Azure Fundamentals exam`},
+    ]
+  },
+  {
+    id:'p3', num:'03', tag:'Core focus',
+    title:`Identity and Access — Microsoft Entra ID`,
+    desc:`Almost everything after this — App Service, Key Vault, your Angular SPA — sits on top of identity. Worth the extra time.`,
+    items:[
+      {id:'p3i1', text:`Microsoft Entra ID basics: tenant, users, groups, app registrations`},
+      {id:'p3i2', text:`Role-Based Access Control (RBAC): built-in roles, custom roles, and scope`},
+      {id:'p3i3', text:`Managed identities — system-assigned vs user-assigned`, deep:true, note:`How App Service talks to Key Vault and Postgres with zero stored secrets. You will lean on this in nearly every phase after this one.`},
+      {id:'p3i4', text:`OAuth 2.0 and OpenID Connect flows: Authorization Code with PKCE, Client Credentials`, deep:true, note:`PKCE is the flow your Angular SPA uses via MSAL; Client Credentials is for service-to-service calls with no user present.`},
+      {id:'p3i5', text:`Secure an Angular SPA with @azure/msal-angular`},
+      {id:'p3i6', text:`Secure an ASP.NET Core Web API with Microsoft.Identity.Web / JWT bearer validation`},
+      {id:'p3i7', text:`App registrations: redirect URIs, API permissions, exposing an API scope`},
+      {id:'p3i8', text:`Microsoft Entra External ID (formerly B2C) — for customer sign-up and sign-in`},
+    ]
+  },
+  {
+    id:'p4', num:'04', tag:'Core focus',
+    title:`Compute for .NET Workloads`,
+    desc:`Where your ASP.NET Core API actually runs.`,
+    items:[
+      {id:'p4i1', text:`App Service fundamentals: App Service Plans, pricing tiers, regions`},
+      {id:'p4i2', text:`Deploy an ASP.NET Core Web API to App Service from Visual Studio, VS Code, or the CLI`, deep:true, note:`Start with a right-click publish, then redo the same deploy through a pipeline once you reach Phase 9.`},
+      {id:'p4i3', text:`App settings and connection strings — how they map onto appsettings.json`},
+      {id:'p4i4', text:`Deployment slots — stage a release, then swap it into production`, deep:true, note:`A swap instead of a redeploy is what makes a release a non-event instead of a maintenance window.`},
+      {id:'p4i5', text:`Manual scaling vs autoscale rules`},
+      {id:'p4i6', text:`Azure Functions, C# isolated worker model: HTTP and timer triggers, bindings`},
+      {id:'p4i7', text:`Containerize a .NET API with Docker and push it to Azure Container Registry`},
+      {id:'p4i8', text:`Azure Container Apps — deploy the containerized API, revisions, scale-to-zero`},
+      {id:'p4i9', text:`Azure Kubernetes Service — know what it is for; do not rabbit-hole into it yet`},
+    ]
+  },
+  {
+    id:'p5', num:'05', tag:'Core focus',
+    title:`Data Platform — PostgreSQL on Azure`,
+    desc:`Your database. This is the section to actually slow down on.`,
+    items:[
+      {id:'p5i1', text:`Azure Database for PostgreSQL – Flexible Server: provisioning, burstable vs general-purpose tiers`, deep:true, note:`Burstable (B-series) is fine for learning; move to General Purpose before anything real depends on it.`},
+      {id:'p5i2', text:`Networking modes: public access with firewall rules vs VNet-integrated private access`, deep:true, note:`Start with firewall rules to move fast, then switch to private access before production — see Phase 7.`},
+      {id:'p5i3', text:`Connect from .NET with Npgsql and the EF Core Npgsql provider`},
+      {id:'p5i4', text:`Run EF Core migrations against Azure Postgres from a CI/CD pipeline`, deep:true, note:`Decide deliberately: migrations run automatically on deploy, or as a manual step. Automatic is convenient until one locks a large table mid-deploy.`},
+      {id:'p5i5', text:`Backups, point-in-time restore, and zone-redundant high availability`},
+      {id:'p5i6', text:`Connection pooling — Flexible Server's built-in PgBouncer vs client-side pooling`},
+      {id:'p5i7', text:`Azure Cache for Redis — offload read-heavy queries from Postgres`},
+      {id:'p5i8', text:`Azure Blob Storage: containers, SAS tokens, the Azure.Storage.Blobs SDK from C#`},
+      {id:'p5i9', text:`Know the names: Azure SQL and Cosmos DB — when you would reach for them instead of Postgres`},
+    ]
+  },
+  {
+    id:'p6', num:'06', tag:null,
+    title:`Hosting the Angular Frontend`,
+    desc:`Where the SPA lives, and how it reaches your API.`,
+    items:[
+      {id:'p6i1', text:`Azure Static Web Apps: deploy an Angular build, free tier, per-PR staging environments`},
+      {id:'p6i2', text:`Static Web Apps built-in auth vs bringing your own MSAL flow`},
+      {id:'p6i3', text:`Alternative: serve Angular from App Service, same host as the API or separate`},
+      {id:'p6i4', text:`Azure CDN / Azure Front Door for caching static assets globally`, deep:true, note:`Front Door also gives you a WAF and path-based routing — worth it once the SPA and API live on different hosts.`},
+      {id:'p6i5', text:`Configure CORS on the ASP.NET Core API for the SPA's origin`},
+      {id:'p6i6', text:`Environment-specific config in Angular (environment.ts) mapped to Azure app settings`},
+    ]
+  },
+  {
+    id:'p7', num:'07', tag:null,
+    title:`Networking and Private Connectivity`,
+    desc:`Locking things down so only your app can reach your data.`,
+    items:[
+      {id:'p7i1', text:`Virtual Networks (VNet), subnets, Network Security Groups`},
+      {id:'p7i2', text:`VNet Integration for App Service — routing outbound traffic through the VNet`},
+      {id:'p7i3', text:`Private Endpoints for Postgres, Key Vault, and Storage`, deep:true, note:`The production-readiness step most tutorials skip. Budget real time to wire one up end-to-end, not just read about it.`},
+      {id:'p7i4', text:`Private DNS zones — why a private endpoint is useless without one`},
+      {id:'p7i5', text:`Application Gateway vs Front Door vs Load Balancer — when each applies`},
+    ]
+  },
+  {
+    id:'p8', num:'08', tag:null,
+    title:`Security`,
+    desc:`Nothing sensitive should ever sit in appsettings.json.`,
+    items:[
+      {id:'p8i1', text:`Azure Key Vault: secrets, keys, and certificates`},
+      {id:'p8i2', text:`Reference Key Vault secrets from App Service via Managed Identity`, deep:true, note:`Combine with the managed identity from Phase 3 so the API authenticates to Key Vault with no client secret anywhere.`},
+      {id:'p8i3', text:`Azure App Configuration — centralized settings and feature flags across environments`},
+      {id:'p8i4', text:`Key Vault access policies vs the Azure RBAC permission model`},
+      {id:'p8i5', text:`Rotate secrets and connection strings without redeploying`},
+    ]
+  },
+  {
+    id:'p9', num:'09', tag:'Core focus',
+    title:`CI/CD and Infrastructure as Code`,
+    desc:`How code and infrastructure actually get to Azure, repeatably.`,
+    items:[
+      {id:'p9i1', text:`Pick one: Azure DevOps Pipelines or GitHub Actions — learn it properly rather than both shallowly`},
+      {id:'p9i2', text:`Build-and-deploy pipeline for the ASP.NET Core API: build, test, publish, deploy to App Service`, deep:true},
+      {id:'p9i3', text:`Build-and-deploy pipeline for the Angular app: npm build, deploy to Static Web Apps`},
+      {id:'p9i4', text:`Environment promotion: dev to staging to prod, with slot swaps or approval gates`},
+      {id:'p9i5', text:`Bicep fundamentals: resources, parameters, variables, outputs`, deep:true, note:`Bicep compiles down to the same ARM JSON — learn it directly rather than hand-writing the JSON it replaces.`},
+      {id:'p9i6', text:`Bicep modules — split a real environment (App Service, Postgres, Key Vault) into reusable pieces`},
+      {id:'p9i7', text:`Secrets in pipelines: service connections and OIDC federation instead of stored credentials`},
+      {id:'p9i8', text:`Optional: Terraform, only if your team is already multi-cloud`},
+    ]
+  },
+  {
+    id:'p10', num:'10', tag:'Core focus',
+    title:`Monitoring and Observability`,
+    desc:`How you will know something broke before a user tells you.`,
+    items:[
+      {id:'p10i1', text:`Application Insights: instrument ASP.NET Core with the SDK`, deep:true},
+      {id:'p10i2', text:`Track requests, dependencies (including Postgres calls), and exceptions end-to-end`, deep:true},
+      {id:'p10i3', text:`Application Insights JavaScript SDK in the Angular app — connect frontend and backend traces`},
+      {id:'p10i4', text:`Azure Monitor and the Log Analytics workspace — where the logs actually land`},
+      {id:'p10i5', text:`Kusto Query Language (KQL) — enough to write your own basic queries`, deep:true, note:`A handful of patterns — where, summarize, join — cover most real debugging sessions.`},
+      {id:'p10i6', text:`Alerts and Action Groups — get paged before your users complain`},
+    ]
+  },
+  {
+    id:'p11', num:'11', tag:null,
+    title:`Messaging and Integration`,
+    desc:`Decoupling services once a single API is not enough.`,
+    items:[
+      {id:'p11i1', text:`Azure Service Bus: queues vs topics and subscriptions, and when to use each`},
+      {id:'p11i2', text:`Publish and consume Service Bus messages from a .NET background service`},
+      {id:'p11i3', text:`Azure Event Grid — event-driven architecture, in overview`},
+      {id:'p11i4', text:`Know the names: Event Hubs and Logic Apps`},
+    ]
+  },
+  {
+    id:'p12', num:'12', tag:null,
+    title:`API Management and Architecture`,
+    desc:`Fronting your API properly, and thinking like an architect.`,
+    items:[
+      {id:'p12i1', text:`Azure API Management: import your Web API, policies, rate limiting`},
+      {id:'p12i2', text:`The Well-Architected Framework — Reliability, Security, Cost, Operational Excellence, Performance`},
+      {id:'p12i3', text:`Monolith on App Service vs microservices on Container Apps — choosing per project`},
+    ]
+  },
+  {
+    id:'p13', num:'13', tag:'Core focus',
+    title:`Capstone — Ship One Real Thing End to End`,
+    desc:`Everything above, wired together. Do not skip this — it is where the pieces actually click.`,
+    items:[
+      {id:'p13i1', text:`Angular SPA deployed to Static Web Apps`},
+      {id:'p13i2', text:`ASP.NET Core Web API deployed to App Service or Container Apps`},
+      {id:'p13i3', text:`Azure Database for PostgreSQL Flexible Server, with EF Core migrations run by the pipeline`},
+      {id:'p13i4', text:`Sign-in wired through Entra ID: MSAL in Angular, JWT validation in the API`},
+      {id:'p13i5', text:`Every secret in Key Vault, reached via Managed Identity — nothing in source control`},
+      {id:'p13i6', text:`Application Insights wired into both the API and the SPA`},
+      {id:'p13i7', text:`The whole environment defined in Bicep, deployed via GitHub Actions or Azure Pipelines`},
+      {id:'p13i8', text:`A staging slot and swap in place for zero-downtime deploys`},
+    ]
+  },
+  {
+    id:'p14', num:'14', tag:null,
+    title:`Certification Path`,
+    desc:`Optional, but worth structuring — each exam assumes the last.`,
+    items:[
+      {id:'p14i1', text:`AZ-900: Azure Fundamentals — validates Phase 2`},
+      {id:'p14i2', text:`AZ-204: Azure Developer Associate — the core certification for this whole plan`},
+      {id:'p14i3', text:`AZ-400: DevOps Engineer Expert — optional, if CI/CD becomes your focus`},
+      {id:'p14i4', text:`AZ-305: Solutions Architect Expert — optional stretch, after AZ-204`},
+    ]
+  },
+];
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function countPhase(phase, state){
+  const total = phase.items.length;
+  const done = phase.items.filter(function(i){ return state.has(i.id); }).length;
+  return {done:done, total:total};
+}
+function countAll(state){
+  let done = 0, total = 0;
+  PHASES.forEach(function(p){
+    total += p.items.length;
+    done += p.items.filter(function(i){ return state.has(i.id); }).length;
+  });
+  return {done:done, total:total};
+}
+function saveStatusLabel(){
+  switch(saveStatus){
+    case 'saving': return 'Saving…';
+    case 'unsaved': return 'Unsaved changes';
+    case 'local': return 'Progress not saved in this view';
+    case 'error': return 'Couldn’t save — will retry on next change';
+    default: return 'Progress saved';
+  }
+}
+function saveStatusClass(){ return 'status-' + saveStatus; }
+
+function renderItem(item, state){
+  const checked = state.has(item.id);
+  return '<label class="item' + (checked ? ' done' : '') + '" data-id="' + item.id + '">' +
+    '<input type="checkbox" class="chk" id="' + item.id + '" data-id="' + item.id + '"' + (checked ? ' checked' : '') + '>' +
+    '<span class="item-body">' +
+      '<span class="item-text">' + esc(item.text) + (item.deep ? ' <span class="pill gold">Deep dive</span>' : '') + '</span>' +
+      (item.note ? '<span class="item-note">' + esc(item.note) + '</span>' : '') +
+    '</span>' +
+  '</label>';
+}
+function renderPhase(phase, state){
+  const c = countPhase(phase, state);
+  const pct = c.total ? Math.round((c.done / c.total) * 100) : 0;
+  return '<section class="phase" id="' + phase.id + '">' +
+    '<div class="phase-head">' +
+      '<div class="eyebrow-row">' +
+        '<span class="eyebrow">Phase ' + phase.num + '</span>' +
+        (phase.tag ? '<span class="pill gold">' + esc(phase.tag) + '</span>' : '') +
+      '</div>' +
+      '<h2 class="phase-title">' + esc(phase.title) + '</h2>' +
+      '<p class="phase-desc">' + esc(phase.desc) + '</p>' +
+      '<div class="progress-row">' +
+        '<div class="bar"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="progress-count">' + c.done + ' / ' + c.total + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="items">' + phase.items.map(function(i){ return renderItem(i, state); }).join('') + '</div>' +
+  '</section>';
+}
+function renderNav(state){
+  return '<nav class="navchips" aria-label="Jump to phase">' +
+    PHASES.map(function(p){
+      const c = countPhase(p, state);
+      const complete = c.total > 0 && c.done === c.total;
+      return '<a href="#' + p.id + '" class="chip' + (complete ? ' complete' : '') + (p.tag ? ' core' : '') + '">' +
+        '<span class="chip-num">' + p.num + '</span>' +
+        '<span class="chip-title">' + esc(p.title) + '</span>' +
+        '<span class="chip-count">' + c.done + '/' + c.total + '</span>' +
+      '</a>';
+    }).join('') +
+  '</nav>';
+}
+function renderHeader(state){
+  const c = countAll(state);
+  const pct = c.total ? Math.round((c.done / c.total) * 100) : 0;
+  return '<header>' +
+    '<p class="kicker">Azure learning path</p>' +
+    '<h1>Azure Study Path</h1>' +
+    '<p class="subtitle">Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>az login</code> to a certified, production-shaped deployment.</p>' +
+    '<div class="overall">' +
+      '<div class="bar big"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="overall-meta">' +
+        '<span>' + c.done + ' / ' + c.total + ' complete · ' + pct + '%</span>' +
+        '<span class="save-status ' + saveStatusClass() + '">' + saveStatusLabel() + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="legend">' +
+      '<span class="legend-item"><span class="pill gold">Core focus</span> phases to slow down on for this stack</span>' +
+      '<span class="legend-item"><span class="pill gold">Deep dive</span> topics worth studying beyond the surface</span>' +
+    '</div>' +
+  '</header>';
+}
+function renderBody(state){
+  return '<div class="wrap">' +
+    renderHeader(state) +
+    renderNav(state) +
+    '<main class="phases">' + PHASES.map(function(p){ return renderPhase(p, state); }).join('') + '</main>' +
+    '<footer class="page-footer">Check off items as you go — progress is saved automatically.</footer>' +
+  '</div>';
+}
+function buildDoc(state){
+  return '<!doctype html>\n' +
+'<html lang="en">\n' +
+'<head>\n' +
+'<meta charset="utf-8">\n' +
+'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+'<title>Azure Study Path</title>\n' +
+FONT_LINK + '\n' +
+'<style id="page-style">' + STYLE_CSS + '</style>\n' +
+'</head>\n' +
+'<body>\n' +
+'<div id="app">' + renderBody(state) + '</div>\n' +
+'<script id="state-data" type="application/json">' + JSON.stringify(Array.from(state)) + '<\/script>\n' +
+'<script>' + SELF_SCRIPT + '<\/script>\n' +
+'</body>\n' +
+'</html>';
+}
+
+const state = new Set(JSON.parse(document.getElementById('state-data').textContent || '[]'));
+let saveStatus = 'saved';
+let saveTimer = null;
+let artifactNs = null;
+
+function mount(){
+  document.getElementById('app').innerHTML = renderBody(state);
+}
+function onToggle(e){
+  const t = e.target;
+  if (!t.classList || !t.classList.contains('chk')) return;
+  const id = t.dataset.id;
+  if (t.checked) state.add(id); else state.delete(id);
+  saveStatus = 'unsaved';
+  mount();
+  const el = document.getElementById(id);
+  if (el) el.focus();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 700);
+}
+function saveNow(){
+  if (!artifactNs){
+    saveStatus = 'local';
+    mount();
+    return;
+  }
+  saveStatus = 'saving';
+  mount();
+  artifactNs.publish(buildDoc(state)).then(function(){
+    saveStatus = 'saved';
+    mount();
+  }).catch(function(err){
+    if (err && err.code === 'conflict') return;
+    saveStatus = 'error';
+    mount();
+  });
+}
+
+mount();
+document.getElementById('app').addEventListener('change', onToggle);
+if (window.claude && window.claude.use){
+  window.claude.use('artifact').then(function(ns){ artifactNs = ns; }).catch(function(){});
+}
+</script>
