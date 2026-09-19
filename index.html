@@ -61,21 +61,25 @@
   --danger:#e08079;
   --shadow:0 1px 3px rgba(0,0,0,.4);
 }
-/* Per-path accent. Azure keeps the root blue; Java shifts to teal. */
-[data-path="java"]{
-  --accent:#0f766e;
-  --accent-soft:#d9f2ee;
-}
+/* Per-path accent. Azure keeps the root blue; each other tab gets its own hue
+   so the tab you are on is obvious without reading the label. */
+[data-path="java"]       {--accent:#0f766e;--accent-soft:#d9f2ee;}
+[data-path="distributed"]{--accent:#6d4aad;--accent-soft:#eae3f8;}
+[data-path="scaling"]    {--accent:#2f7a46;--accent-soft:#dcf0e2;}
+[data-path="events"]     {--accent:#a13a76;--accent-soft:#f9e3f1;}
+[data-path="design"]     {--accent:#a8453a;--accent-soft:#fae3e0;}
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) [data-path="java"]{
-    --accent:#5fd0c3;
-    --accent-soft:#12403c;
-  }
+  :root:not([data-theme="light"]) [data-path="java"]       {--accent:#5fd0c3;--accent-soft:#12403c;}
+  :root:not([data-theme="light"]) [data-path="distributed"]{--accent:#b49ae8;--accent-soft:#2d2247;}
+  :root:not([data-theme="light"]) [data-path="scaling"]    {--accent:#6fd090;--accent-soft:#163a25;}
+  :root:not([data-theme="light"]) [data-path="events"]     {--accent:#ef92c9;--accent-soft:#411733;}
+  :root:not([data-theme="light"]) [data-path="design"]     {--accent:#ef938a;--accent-soft:#45201c;}
 }
-:root[data-theme="dark"] [data-path="java"]{
-  --accent:#5fd0c3;
-  --accent-soft:#12403c;
-}
+:root[data-theme="dark"] [data-path="java"]       {--accent:#5fd0c3;--accent-soft:#12403c;}
+:root[data-theme="dark"] [data-path="distributed"]{--accent:#b49ae8;--accent-soft:#2d2247;}
+:root[data-theme="dark"] [data-path="scaling"]    {--accent:#6fd090;--accent-soft:#163a25;}
+:root[data-theme="dark"] [data-path="events"]     {--accent:#ef92c9;--accent-soft:#411733;}
+:root[data-theme="dark"] [data-path="design"]     {--accent:#ef938a;--accent-soft:#45201c;}
 html,body{height:100%;}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.5;-webkit-font-smoothing:antialiased;}
 img{max-width:100%;}
@@ -100,14 +104,15 @@ h1{font-family:var(--font-display);font-size:clamp(1.6rem,4.5vw,2.3rem);font-wei
 /* Tabs */
 .site-head{margin-bottom:20px;}
 .site-kicker{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;color:var(--text-faint);font-weight:600;margin:0 0 12px;}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;}
-.tab{flex:1 1 210px;display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;box-shadow:var(--shadow);}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:8px;}
+.tab{display:flex;flex-direction:column;gap:3px;text-align:left;padding:10px 12px 11px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;box-shadow:var(--shadow);}
 .tab:hover{border-color:var(--accent);}
 .tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft);}
-.tab-label{font-family:var(--font-display);font-weight:700;font-size:1rem;}
-.tab-sub{font-size:.78rem;color:var(--text-dim);line-height:1.3;}
-.tab-meta{display:flex;align-items:center;gap:8px;margin-top:4px;}
-.tab-count{font-family:var(--font-mono);font-size:.7rem;color:var(--text-dim);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.tab-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+.tab-label{font-family:var(--font-display);font-weight:700;font-size:.92rem;line-height:1.2;}
+.tab-count{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.tab-sub{font-size:.72rem;color:var(--text-dim);line-height:1.3;}
+.tab .bar{height:4px;margin-top:6px;flex:none;}
 /* .NET -> Java map */
 details.map{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:22px;}
 details.map>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;font-family:var(--font-display);font-weight:700;font-size:.98rem;}
@@ -421,7 +426,7 @@ const JAVA_PHASES = [
       {text:`Publish the contract with springdoc-openapi, and generate a typed TypeScript client for Angular with openapi-generator`, deep:true, note:`Drift between Java DTOs and TypeScript interfaces is the main integration pain. Generate the client and it stops being one.`},
       {text:`CORS versus an Angular dev proxy (proxy.conf.json), and how the production build is served: Nginx or Spring Boot static resources`},
       {text:`Pagination, sorting and filtering: Pageable, page/size/sort conventions, and keyset pagination for large tables`},
-      {text:`Safe retries: the Idempotency-Key header on POST, and ETag with If-Match for optimistic concurrency over HTTP`, deep:true, note:`Making a retry harmless is the same idea you will meet again at every distributed-systems layer.`},
+      {text:`Safe retries: the Idempotency-Key header on POST, and ETag with If-Match for optimistic concurrency over HTTP`, deep:true, note:`The HTTP-level expression of idempotency — the Distributed Systems tab covers why it matters everywhere else.`},
       {text:`Push to the browser: Server-Sent Events and WebSocket/STOMP, consumed from Angular`},
       {text:`Calling other HTTP services with RestClient and declarative @HttpExchange interfaces (the HttpClient / Refit equivalents)`},
     ]
@@ -447,17 +452,17 @@ const JAVA_PHASES = [
   {
     id:'p7', num:'07', tag:null,
     title:`PostgreSQL Beyond CRUD`,
-    desc:`You already know Postgres. This phase covers the internals that scaling and correctness depend on.`,
+    desc:`You already know Postgres. This phase covers the engine internals; the Scaling tab covers what to do when one server is not enough.`,
     items:[
       {text:`Index types and design: B-tree, GIN, GiST and BRIN, partial and covering (INCLUDE) indexes, multicolumn ordering`},
       {text:`EXPLAIN (ANALYZE, BUFFERS): read plans, spot sequential scans and bad row estimates, and find your worst queries with pg_stat_statements`, deep:true},
       {text:`MVCC, vacuum and bloat — and why long-running transactions hurt everything`, deep:true, note:`A forgotten open transaction can stop vacuum from reclaiming dead rows across the whole database.`},
-      {text:`Isolation levels (read committed, repeatable read, serializable), lock modes, deadlocks, and SELECT … FOR UPDATE [SKIP LOCKED] — Postgres as a lightweight queue`},
+      {text:`Isolation levels (read committed, repeatable read, serializable), lock modes, deadlocks, and SELECT … FOR UPDATE [SKIP LOCKED]`},
       {text:`JSONB with GIN indexes, arrays, and built-in full-text search — before reaching for a separate search engine`},
-      {text:`Declarative table partitioning (range, list, hash) for event and time-series tables, and retention by dropping partitions`},
-      {text:`Connection management: max_connections, HikariCP pool sizing, PgBouncer and its transaction-pooling caveats`, deep:true, note:`More connections usually makes Postgres slower, not faster. Size pools from cores and workload, not from thread counts.`},
-      {text:`Replication: streaming replicas, replication lag, and logical replication (the basis for change data capture)`},
+      {text:`Window functions, CTEs and lateral joins — the reporting queries you would otherwise write badly in application code`},
+      {text:`Bulk operations: COPY, batch inserts, and why row-by-row inserts through JPA are slow`},
       {text:`Backups and point-in-time recovery: pg_dump vs base backups with WAL archiving — then actually rehearse a restore`},
+      {text:`Extensions worth knowing: pg_stat_statements, pgcrypto, PostGIS, TimescaleDB, pgvector`},
     ]
   },
   {
@@ -486,7 +491,7 @@ const JAVA_PHASES = [
       {text:`Slice tests: @WebMvcTest with MockMvc, @DataJpaTest, @JsonTest`},
       {text:`Testcontainers with real PostgreSQL, Kafka and Redis, wired with @ServiceConnection`, deep:true, note:`Do not test JPA against H2 — its SQL and locking behaviour differ from Postgres. Test against the real database in a container.`},
       {text:`@SpringBootTest for a small number of full-context integration tests, and keeping the suite fast with context caching`},
-      {text:`Asynchronous assertions with Awaitility, and testing Kafka consumers end to end`},
+      {text:`Asynchronous assertions with Awaitility, and testing message consumers end to end`},
       {text:`Contract tests with Pact or Spring Cloud Contract — keeps Angular and other services honest`},
       {text:`ArchUnit rules for layering, JaCoCo coverage as a signal (not a target), and optional mutation testing with PIT`},
     ]
@@ -510,178 +515,75 @@ const JAVA_PHASES = [
   },
   {
     id:'p11', num:'11', tag:null,
-    title:`Caching and Redis`,
-    desc:`The cheapest scaling lever — and a rich source of subtle bugs.`,
+    title:`Caching and Redis from Spring`,
+    desc:`The Spring and Redis mechanics. Cache strategy — patterns, stampedes, invalidation — lives in the Scaling tab.`,
     items:[
       {text:`Redis data types (strings, hashes, sets, sorted sets, streams), TTL, and eviction policies`},
-      {text:`Spring Cache (@Cacheable, @CacheEvict) with Caffeine in-process and Redis shared; Lettuce and RedisTemplate; two-level caching and its coherence problems`},
-      {text:`Cache patterns: cache-aside, read-through, write-through, write-behind — and the failure modes of each`, deep:true},
-      {text:`Invalidation and TTL strategy; cache stampede (request coalescing, jittered TTLs) and cache penetration (negative caching)`, deep:true},
-      {text:`Redis for rate limiting (Bucket4j), counters and leaderboards; distributed locks carry caveats — see Phase 12`},
-      {text:`HTTP-level caching: Cache-Control, ETag, and a CDN in front of the API and the Angular assets`},
+      {text:`Spring Cache: @Cacheable, @CachePut, @CacheEvict, cache managers, and the self-invocation proxy trap`},
+      {text:`Caffeine for in-process caching and Redis for shared caching — and running both as two levels`},
+      {text:`Lettuce, RedisTemplate and serialization choices (JSON vs Java serialization)`},
+      {text:`Bucket4j on Redis for distributed rate limiting from a Spring filter`},
       {text:`Redis persistence and high availability: RDB vs AOF, replication, Sentinel vs Cluster — and treating the cache as rebuildable`},
+      {text:`Testing cache behaviour with Testcontainers Redis, including eviction and miss paths`},
     ]
   },
   {
-    id:'p12', num:'12', tag:'Core focus',
-    title:`Distributed Systems Fundamentals`,
-    desc:`The theory under everything after this. It is what separates using Kafka from understanding it.`,
+    id:'p12', num:'12', tag:null,
+    title:`Messaging from Spring`,
+    desc:`The Spring client side of messaging. Broker concepts and correctness patterns live in the Event-Driven tab.`,
     items:[
-      {text:`Fallacies of distributed computing, partial failure, and the latency numbers every engineer should know`},
-      {text:`Delivery semantics: at-most-once, at-least-once, and "exactly-once" — in practice, at-least-once plus idempotency`, deep:true, note:`No system gives true exactly-once delivery across a network. What you build is an exactly-once effect.`},
-      {text:`Idempotency in practice: idempotency keys, dedup tables, and naturally idempotent operations`, deep:true},
-      {text:`CAP and PACELC — what they actually say, and what they do not`, note:`CAP describes behaviour during a partition only. PACELC adds the everyday latency-vs-consistency trade-off when there is no partition.`},
-      {text:`Consistency models: linearizable, causal, read-your-writes, eventual — mapped onto Postgres primary vs replica, Redis, and Kafka`},
-      {text:`Time and ordering: unreliable clocks, Lamport and vector clocks, and why last-write-wins loses data`},
-      {text:`Replication strategies: single-leader, multi-leader, and leaderless quorums (R + W > N)`},
-      {text:`Partitioning: range vs hash, consistent hashing, hot keys and skew, rebalancing`},
-      {text:`Consensus and leader election: Raft, quorums, and what etcd, ZooKeeper and Kafka's KRaft use them for`, deep:true, note:`You will probably never implement Raft, but you should know what a quorum guarantees and what a minority partition can and cannot do.`},
-      {text:`Distributed transactions: why two-phase commit is avoided, and how sagas and the outbox replace it (Phase 15)`},
-      {text:`Distributed locks and fencing tokens: why a lock with a TTL is not safe on its own`, deep:true},
+      {text:`Spring for Apache Kafka: KafkaTemplate, @KafkaListener, listener container concurrency, and manual vs auto commit`},
+      {text:`Error handling: DefaultErrorHandler, exponential backoff, non-blocking retries with @RetryableTopic, and dead-letter routing`, deep:true},
+      {text:`Serializers and the JsonDeserializer trusted-packages trap; wiring a Schema Registry client`},
+      {text:`Implementing the transactional outbox in Spring: entity + relay, or Debezium reading the table`, deep:true, note:`A @Transactional method that also calls kafkaTemplate.send() is the dual-write bug. The outbox is how you avoid it in Spring.`},
+      {text:`Idempotent consumers with a JPA inbox table written in the same transaction as the side effect`, deep:true},
+      {text:`Spring AMQP for RabbitMQ: RabbitTemplate, @RabbitListener, prefetch, and dead-letter exchanges`},
+      {text:`Spring Cloud Stream as a broker abstraction — what it buys and what it hides`},
+      {text:`Testing: Testcontainers Kafka, Awaitility for consumer assertions, and asserting no duplicate side effects on redelivery`},
     ]
   },
   {
-    id:'p13', num:'13', tag:'Core focus',
-    title:`Scaling Systems`,
-    desc:`Getting from one instance to many, in the order it is usually worth doing it.`,
-    items:[
-      {text:`Stateless service design: no in-memory sessions or local files — externalise state (Twelve-Factor)`},
-      {text:`Load balancing: L4 vs L7, algorithms, health checks, NGINX/HAProxy/Envoy — and why to avoid sticky sessions`},
-      {text:`Back-of-envelope estimation (QPS, storage, bandwidth) and percentiles (p50/p95/p99) — and why averages mislead`, deep:true},
-      {text:`The database scaling ladder: query and index tuning → pooling → caching → read replicas → partitioning → sharding (shard-key choice, cross-shard queries; know Citus)`, deep:true, note:`Do them in order. Most systems never need to leave the first four rungs, and sharding is the hardest to undo.`},
-      {text:`Read replicas from Spring: routing read-only transactions with AbstractRoutingDataSource and handling replication lag`, deep:true},
-      {text:`Queue-based load leveling and backpressure: bounded queues, consumer lag, load shedding`, deep:true},
-      {text:`Rate limiting and throttling: token bucket, leaky bucket, sliding window — and where to enforce it`},
-      {text:`Autoscaling: Kubernetes HPA on CPU or custom metrics, KEDA on consumer lag, and JVM warm-up (JIT) cold-start effects`},
-      {text:`Multi-region basics: active-passive vs active-active, RPO and RTO, global traffic routing`},
-      {text:`Load test with k6 or Gatling, find the first bottleneck, profile it with JFR or async-profiler flame graphs, fix it, repeat`, deep:true, note:`The first bottleneck is rarely where you predicted — usually a connection pool, a lock, or GC.`},
-    ]
-  },
-  {
-    id:'p14', num:'14', tag:'Core focus',
-    title:`Messaging — Kafka and RabbitMQ`,
-    desc:`Moving from synchronous calls to asynchronous messaging. Kafka first, RabbitMQ for contrast.`,
-    items:[
-      {text:`Messaging vocabulary: queue vs pub/sub vs log; commands vs events; when async beats a synchronous call`},
-      {text:`Kafka architecture: brokers, topics, partitions, replication (ISR, min.insync.replicas), KRaft — run a local cluster in Docker`},
-      {text:`Producers: acks, retries, the idempotent producer, batching, and choosing a partition key`, deep:true, note:`Ordering exists only within a partition. Key by the entity whose events must stay ordered — for example orderId.`},
-      {text:`Consumers and consumer groups: offsets, commit strategies, rebalancing, lag — and why concurrency is capped by partition count`, deep:true},
-      {text:`Spring for Apache Kafka: @KafkaListener, KafkaTemplate, listener concurrency, and error handlers with backoff`},
-      {text:`Retries, retry topics, dead-letter topics, and poison messages`, deep:true},
-      {text:`Delivery guarantees: at-least-once with idempotent consumers, Kafka transactions, and where exactly-once semantics stop`, deep:true, note:`EOS covers read-process-write inside Kafka. It does not extend to your database or an HTTP call.`},
-      {text:`Serialization and schema evolution: Avro or Protobuf with a Schema Registry; backward vs forward compatibility`, deep:true, note:`Schema changes are one of the most common ways event-driven systems break. Choose a compatibility mode before the first consumer ships.`},
-      {text:`Retention and log compaction — topics as a replayable log, and compaction as latest-value-per-key`},
-      {text:`Stream processing overview: Kafka Streams and Flink — windows, state, joins; know when you need them`},
-      {text:`RabbitMQ: exchanges (direct, topic, fanout), queues, acks, prefetch — a smart broker vs a dumb log, and when to prefer it (task queues, routing)`},
-    ]
-  },
-  {
-    id:'p15', num:'15', tag:'Core focus',
-    title:`Event-Driven Patterns`,
-    desc:`The patterns that make an event-driven system correct, not just asynchronous.`,
-    items:[
-      {text:`Event kinds: notification, event-carried state transfer, domain events, commands — and treating event schemas as a public API`},
-      {text:`Transactional outbox: write the business row and an outbox row in one transaction, then relay to Kafka`, deep:true, note:`Solves the dual-write problem: you cannot atomically write to Postgres and Kafka. Without an outbox you will eventually lose or duplicate an event.`},
-      {text:`Change data capture with Debezium (Postgres logical decoding → Kafka Connect) versus a polling publisher`, deep:true},
-      {text:`Idempotent consumers and the inbox pattern: a dedup table written in the same transaction as the side effect`, deep:true},
-      {text:`Sagas: choreography vs orchestration, compensating actions, timeouts, and state machines — know Temporal and Camunda before hand-rolling an engine`, deep:true},
-      {text:`CQRS: separate write and read models, projections, and materialised views for queries that span services`},
-      {text:`Event sourcing: events as the source of truth, snapshots, replay — and the real costs`, deep:true, note:`Most systems need events, not event sourcing. Reach for it in audit-critical domains such as ledgers.`},
-      {text:`Ordering, duplicates and late events: version numbers, per-aggregate partitioning, and reordering buffers`},
-      {text:`Eventual consistency in the API and UI: 202 Accepted plus a status resource, and pushing completion to Angular over SSE or WebSocket`},
-      {text:`Design tooling: event storming to find events and boundaries, and AsyncAPI to document them`},
-    ]
-  },
-  {
-    id:'p16', num:'16', tag:null,
-    title:`Microservices and Architecture`,
-    desc:`Only after the monolith is solid. Splitting services is a cost you pay for a specific benefit.`,
-    items:[
-      {text:`Modular monolith first: enforce module boundaries with Spring Modulith or ArchUnit, and extract a service only when a boundary proves itself`, deep:true},
-      {text:`Domain-driven design essentials: bounded contexts, aggregates, ubiquitous language — and how aggregates map to transactions and partition keys`, deep:true},
-      {text:`Hexagonal / clean architecture: ports and adapters, and the trade-off of keeping the domain free of Spring and JPA annotations`},
-      {text:`Service boundaries and data ownership: database per service, no shared tables, and choosing sync vs async between services`},
-      {text:`REST vs gRPC vs messaging between services; gRPC with Protobuf in Java`},
-      {text:`API gateway and backend-for-frontend with Spring Cloud Gateway: routing, edge auth, rate limits, aggregation for Angular`},
-      {text:`Service discovery and configuration: Kubernetes DNS, ConfigMaps and Secrets versus Eureka and Spring Cloud Config`, note:`Much of the older Spring Cloud Netflix stack is superseded by Kubernetes primitives — know it to read old code, not to start new work.`},
-      {text:`Evolving safely: strangler-fig migration, anti-corruption layers, and expand/contract database migrations`},
-      {text:`Write architecture decision records (ADRs) — one per significant choice`},
-    ]
-  },
-  {
-    id:'p17', num:'17', tag:null,
-    title:`Resilience and Fault Tolerance`,
-    desc:`Assume every dependency will be slow or down, and design for it.`,
-    items:[
-      {text:`Timeouts on everything — RestClient, JDBC, Kafka, Redis; nothing should default to waiting forever`, deep:true, note:`Missing timeouts, not slow services, are what turn a partial outage into a cascading one.`},
-      {text:`Retries with exponential backoff and jitter; retry only idempotent operations; retry budgets and retry storms`, deep:true},
-      {text:`Resilience4j (the Polly equivalent): circuit breaker, bulkhead, rate limiter, time limiter — with Spring Boot integration`, deep:true},
-      {text:`Fallbacks and graceful degradation: serve stale cache, return defaults, switch features off; shed load at the edge with 429 and 503 plus Retry-After`},
-      {text:`Liveness, readiness and startup probes, and graceful shutdown (server.shutdown=graceful) that drains requests and consumers`},
-      {text:`Chaos experiments: kill a pod, a broker, a replica — with Toxiproxy or Chaos Mesh — and observe what really happens`},
-      {text:`SLIs, SLOs and error budgets: define one real SLO for your capstone`},
-      {text:`Disaster recovery: RPO and RTO, restore drills, and a runbook for each failure you rehearsed`},
-    ]
-  },
-  {
-    id:'p18', num:'18', tag:null,
+    id:'p13', num:'13', tag:null,
     title:`Docker, Kubernetes and Delivery`,
-    desc:`Java-specific container concerns, then running and shipping it. Cloud-neutral — the Azure tab covers one cloud in depth.`,
+    desc:`Java-specific container concerns, then shipping it. Cloud-neutral — the Azure tab covers one cloud in depth.`,
     items:[
       {text:`Container images for Spring Boot: multi-stage Dockerfile or Buildpacks/Jib, layered jars, non-root user, slim JRE base image`},
       {text:`The JVM in containers: MaxRAMPercentage, CPU limits, and how small limits change GC and thread-pool sizing`, deep:true, note:`With under 2 CPUs or roughly 1.8 GB of memory the JVM can fall back to the serial collector. Set limits deliberately and check which GC you actually got.`},
       {text:`Docker Compose for the full local stack — Angular, API, Postgres, Redis, Kafka, Keycloak — with one command`},
       {text:`Startup and footprint: AppCDS, CRaC and GraalVM native image — know the trade-offs`},
       {text:`Kubernetes core objects: Pod, Deployment, Service, Ingress, ConfigMap, Secret — run locally with kind or minikube`},
-      {text:`Probes, resource requests and limits, HPA, PodDisruptionBudget, and rolling updates`},
+      {text:`Probes, resource requests and limits, PodDisruptionBudget, and rolling updates`},
       {text:`Helm or Kustomize for per-environment configuration, and GitOps with Argo CD or Flux as the delivery model`},
       {text:`CI pipeline (GitHub Actions or GitLab CI): mvn verify, Testcontainers in CI, dependency caching, image build and push, image scanning with Trivy`, deep:true},
-      {text:`Release strategies: rolling, blue/green, canary, feature flags — and database changes that stay compatible across versions`},
+      {text:`Release strategies: rolling, blue/green, canary, feature flags — and database changes that stay compatible across versions`, deep:true, note:`Expand/contract: deploy a schema that both the old and new code can run against, then remove the old columns in a later release.`},
       {text:`Optional: deploy one service to a cloud of your choice — managed Postgres, a container runtime, object storage, a secrets manager`},
     ]
   },
   {
-    id:'p19', num:'19', tag:null,
-    title:`Observability`,
-    desc:`How you will know something is wrong before a user tells you — across services and queues.`,
+    id:'p14', num:'14', tag:null,
+    title:`Observability in Java`,
+    desc:`The instrumentation side. What to alert on and how to trace across queues is covered again in the Event-Driven and Distributed tabs.`,
     items:[
-      {text:`Metrics, logs and traces — and what to alert on: the RED method (rate, errors, duration) for services, USE for resources`},
-      {text:`Micrometer metrics through Actuator, scraped by Prometheus and shown in Grafana — including JVM, GC and HikariCP pool metrics`},
-      {text:`Structured JSON logs carrying trace and correlation IDs via MDC, centralised with Loki or ELK/OpenSearch`},
-      {text:`OpenTelemetry: the Java agent for auto-instrumentation, manual spans, and OTLP export to Tempo or Jaeger`, deep:true},
-      {text:`Tracing across HTTP and Kafka: context propagation through message headers, and span links for asynchronous work`, deep:true},
-      {text:`Alerting on symptoms (error rate, latency, consumer lag) rather than causes — with a runbook per alert`},
-      {text:`Frontend observability: propagate the traceparent header from Angular, and capture errors and web vitals`},
+      {text:`Spring Boot Actuator: health, info, metrics, and securing the endpoints`},
+      {text:`Micrometer to Prometheus, visualised in Grafana — plus the JVM, GC, HikariCP and Kafka client metrics you get for free`},
+      {text:`Custom metrics: counters, timers, gauges — and cardinality discipline on tags`, deep:true, note:`A tag with unbounded values, such as a user id, will take down your metrics backend before it helps you.`},
+      {text:`Structured JSON logging with Logback, and correlation IDs through MDC across threads and messages`},
+      {text:`OpenTelemetry in Java: the auto-instrumentation agent, manual spans, and OTLP export to Tempo or Jaeger`, deep:true},
+      {text:`Profiling in production: JFR continuous recording and async-profiler flame graphs`},
+      {text:`Frontend observability: propagate the traceparent header from Angular and capture errors and web vitals`},
     ]
   },
   {
-    id:'p20', num:'20', tag:'Core focus',
-    title:`System Design Practice`,
-    desc:`Apply everything above under interview-style constraints. Write each design down — do not just think it through.`,
-    items:[
-      {text:`Use one framework every time: requirements → estimates → API → data model → high-level design → deep dive → bottlenecks and trade-offs`},
-      {text:`Design a URL shortener: ID generation, caching, hot keys`},
-      {text:`Design a rate limiter: algorithms and distributed counters`},
-      {text:`Design a notification system: fan-out, retries, user preferences, deduplication`},
-      {text:`Design a chat / real-time messaging service: WebSocket fan-out, presence, ordering, offline delivery`},
-      {text:`Design a payment or ledger service: idempotency, double-entry, exactly-once effect, reconciliation`, deep:true},
-      {text:`Design an event-ingestion and analytics pipeline: Kafka, partitioning, batch vs stream, an OLAP store`, deep:true},
-      {text:`Pick two more: a news feed (fan-out on write vs read) and a ride-sharing or food-delivery backend (geo indexing, matching, order state machines)`},
-      {text:`Write each design as a 1–2 page doc with a diagram and an explicit trade-offs section, then explain it aloud`},
-      {text:`Read three public postmortems and study what failed and why`},
-    ]
-  },
-  {
-    id:'p21', num:'21', tag:'Core focus',
+    id:'p15', num:'15', tag:'Core focus',
     title:`Capstone — Event-Driven Analytics Platform`,
-    desc:`Everything above, wired together as one real system. This is where the pieces stop being separate topics.`,
+    desc:`Everything from every tab, wired together as one real system. This is where the pieces stop being separate topics.`,
     items:[
       {text:`Angular dashboard — KPI cards, charts, filters, date range — using a typed client generated from OpenAPI`},
       {text:`API gateway and auth: Keycloak, roles (ADMIN, ANALYST, USER), method security, and a test for object-level authorization`},
       {text:`Ingestion service: validates events, deduplicates by event ID, and publishes to Kafka with a deliberately chosen partition key`},
       {text:`Analytics service: consumes events into time-partitioned PostgreSQL tables, with Flyway migrations and keyset-paginated queries`},
-      {text:`Reliability: transactional outbox with Debezium, inbox deduplication on consumers, and a dead-letter topic for poison messages`},
-      {text:`Long-running reports: request → Kafka → worker → stored result → notification, with a status endpoint and SSE push to Angular`},
+      {text:`Reliability: transactional outbox with Debezium, inbox deduplication on consumers, and a dead-letter topic for poison messages`, deep:true},
+      {text:`Long-running reports: request → Kafka → worker → stored result → notification, with a 202 status endpoint and SSE push to Angular`},
       {text:`Redis caching for dashboard queries with explicit invalidation, plus rate limiting at the gateway`},
       {text:`Resilience4j timeouts, retries and circuit breakers on service calls; graceful shutdown for the API and the consumers`},
       {text:`Tests: unit, slice, Testcontainers integration (Postgres + Kafka), and contract tests`},
@@ -692,19 +594,448 @@ const JAVA_PHASES = [
     ]
   },
   {
-    id:'p22', num:'22', tag:null,
-    title:`Reading and Certification Path`,
-    desc:`Optional, but worth structuring. Books first — they carry most of the depth in this plan.`,
+    id:'p16', num:'16', tag:null,
+    title:`Java Reading and Certification`,
+    desc:`Language and framework reading. The systems books live in the tab they belong to.`,
     items:[
       {text:`Effective Java (Joshua Bloch) — after Phase 2, and again after Phase 6`},
       {text:`Java Concurrency in Practice (Brian Goetz) — alongside Phase 10`},
-      {text:`Designing Data-Intensive Applications (Martin Kleppmann) — alongside Phases 12–15`, deep:true, note:`Read the replication, partitioning, transactions, distributed-trouble, and consistency/consensus chapters closely. They map directly onto Phases 12–15.`},
-      {text:`Kafka: The Definitive Guide — alongside Phase 14`},
-      {text:`Building Microservices (Sam Newman) and Domain-Driven Design Distilled (Vaughn Vernon) — alongside Phase 16`},
-      {text:`Release It! (Michael Nygard) — alongside Phase 17`},
+      {text:`Spring in Action or the Spring Boot reference documentation — alongside Phases 4–8`},
+      {text:`High-Performance Java Persistence (Vlad Mihalcea) — alongside Phase 6`, deep:true, note:`The single best source on the Hibernate behaviour that surprises people, and it is written for exactly the gap you will be standing in.`},
       {text:`Optional: Oracle Certified Professional, Java SE Developer — validates Phases 1–3`},
       {text:`Optional: Spring Professional certification (check current availability) — validates Phases 4–8`},
-      {text:`Optional: Confluent Certified Developer for Apache Kafka (Phase 14) or CKAD (Phase 18) — pick the one that matches where you specialise`},
+    ]
+  },
+];
+
+const DISTRIBUTED_PHASES = [
+  {
+    id:'p1', num:'01', tag:'Core focus',
+    title:`Foundations and Failure`,
+    desc:`Why a remote call is not a method call. Everything else in this tab follows from this phase.`,
+    items:[
+      {text:`The fallacies of distributed computing, and which one you are currently assuming`},
+      {text:`Partial failure: the request that neither succeeded nor failed, and why "unknown" is a third outcome you must design for`, deep:true, note:`A timeout tells you nothing about whether the work happened. This is why idempotency exists.`},
+      {text:`Latency numbers worth memorising: memory vs SSD vs same-datacentre network vs cross-region`},
+      {text:`Failure detection: heartbeats, timeouts, phi-accrual — and why you cannot distinguish a slow node from a dead one`, deep:true, note:`This single impossibility is the root of most distributed-systems complexity, including consensus.`},
+      {text:`Safety vs liveness: what the system guarantees always, versus what it guarantees eventually`},
+      {text:`Availability math: serial dependencies multiply, so five 99.9% services in a request path are not 99.9%`, deep:true},
+      {text:`Failure domains: process, node, rack, availability zone, region — and matching redundancy to each`},
+    ]
+  },
+  {
+    id:'p2', num:'02', tag:'Core focus',
+    title:`Time, Ordering and Consistency`,
+    desc:`The vocabulary that makes the rest of the tab precise. Worth being pedantic about.`,
+    items:[
+      {text:`Physical clocks, NTP drift and clock skew — why timestamps from two machines are not comparable`},
+      {text:`Logical clocks: happens-before, Lamport timestamps, and vector clocks`},
+      {text:`Why last-write-wins silently loses data, and the alternatives: version vectors, explicit merge, CRDTs`, deep:true},
+      {text:`Consistency models: linearizable, sequential, causal, read-your-writes, monotonic reads, eventual`, deep:true, note:`Learn these as a ladder of guarantees. Most real systems live at causal or read-your-writes, not at either extreme.`},
+      {text:`CAP and PACELC — what they actually claim, and the everyday latency-versus-consistency trade-off when there is no partition`},
+      {text:`Transaction isolation vs distributed consistency: serializable is not linearizable, and ACID terms collide with CAP terms`, deep:true},
+      {text:`Map the models onto tools you use: Postgres primary vs replica, Redis, Kafka, DynamoDB, Cosmos DB consistency levels`},
+    ]
+  },
+  {
+    id:'p3', num:'03', tag:null,
+    title:`Replication`,
+    desc:`Keeping more than one copy of the data, and what each strategy costs.`,
+    items:[
+      {text:`Single-leader replication: synchronous vs asynchronous followers, failover, and the writes you lose in a failover`},
+      {text:`Replication lag in practice: read-your-writes, monotonic reads, and consistent-prefix reads`, deep:true, note:`The user who updates their profile and then sees the old value is a replication-lag bug, not a caching bug.`},
+      {text:`Multi-leader replication and write conflicts: detection, resolution, and why it is rarely worth it`},
+      {text:`Leaderless and quorum replication: R + W > N, sloppy quorums, hinted handoff, read repair, anti-entropy`, deep:true},
+      {text:`Split-brain: what causes it, and fencing as the mitigation`},
+      {text:`Synchronous replication and its availability cost — why "wait for all replicas" reduces uptime`},
+      {text:`Concrete systems: Postgres streaming and logical replication, Redis replication, Kafka ISR, and what each does on failover`},
+    ]
+  },
+  {
+    id:'p4', num:'04', tag:null,
+    title:`Partitioning and Placement`,
+    desc:`Splitting data across nodes. The choices here are the hardest to reverse later.`,
+    items:[
+      {text:`Range vs hash partitioning: range scans versus even distribution`},
+      {text:`Consistent hashing and virtual nodes — why naive modulo hashing makes every resize a full reshuffle`, deep:true},
+      {text:`Hot keys and skew: detecting them, and mitigations such as key salting, dedicated partitions, and per-key limits`, deep:true},
+      {text:`Rebalancing without downtime, and why fixed partition counts are a common simplification`},
+      {text:`Secondary indexes: local (scatter-gather reads) vs global (write amplification)`, deep:true},
+      {text:`Request routing: client-side partition awareness, a routing tier, or any-node coordination`},
+      {text:`Choosing a partition key: cardinality, access pattern, and whether it matches your transaction boundary`, deep:true, note:`Partition key and aggregate boundary should usually be the same thing. When they diverge you inherit distributed transactions.`},
+    ]
+  },
+  {
+    id:'p5', num:'05', tag:null,
+    title:`Consensus and Coordination`,
+    desc:`You will rarely implement these, but you will depend on them daily and be asked about them in interviews.`,
+    items:[
+      {text:`The consensus problem, FLP impossibility in one sentence, and why quorums work anyway in practice`},
+      {text:`Raft: leader election, log replication, commit index — enough to explain it at a whiteboard`, deep:true},
+      {text:`What a quorum actually guarantees, and what a minority partition can and cannot do`, deep:true},
+      {text:`Coordination services and where they hide: etcd (Kubernetes), ZooKeeper, Consul, Kafka KRaft`},
+      {text:`Distributed locks: why a lock with a TTL is unsafe on its own, and fencing tokens`, deep:true, note:`Read both sides of the Redlock debate. The fencing-token argument is the one that generalises beyond Redis.`},
+      {text:`Leader election for singleton workloads: schedulers, compaction jobs, outbox relays`},
+      {text:`Membership and gossip protocols — how clusters agree on who is alive`},
+    ]
+  },
+  {
+    id:'p6', num:'06', tag:'Core focus',
+    title:`Transactions Across Services`,
+    desc:`What replaces a database transaction once the work spans two systems. The most practically useful phase here.`,
+    items:[
+      {text:`Why two-phase commit is avoided: the blocking coordinator and its availability cost`},
+      {text:`Delivery semantics: at-most-once, at-least-once, and why "exactly-once" is an effect you build, not a guarantee you buy`, deep:true},
+      {text:`Idempotency in practice: idempotency keys, dedup tables, naturally idempotent operations, and idempotent HTTP methods`, deep:true, note:`If you learn one thing in this tab, learn to make every operation safe to repeat. It makes retries, redelivery and failover all survivable.`},
+      {text:`The dual-write problem: you cannot atomically write a database and a message broker`, deep:true},
+      {text:`The transactional outbox as the standard answer — see the Event-Driven tab for the implementation`},
+      {text:`Sagas: choreography vs orchestration, compensating actions, timeouts, and semantic rollback`, deep:true, note:`A compensation is not a rollback — money already refunded is a new fact, not an erased one. Design compensations as first-class business operations.`},
+      {text:`Eventual consistency in user-facing APIs: 202 Accepted plus a status resource, and optimistic UI`},
+      {text:`Reconciliation jobs and audit trails — how you detect and repair the drift that will happen anyway`, deep:true},
+    ]
+  },
+  {
+    id:'p7', num:'07', tag:'Core focus',
+    title:`Resilience and Fault Tolerance`,
+    desc:`Assume every dependency will be slow or down. This phase is mostly a checklist you can apply to code you already have.`,
+    items:[
+      {text:`Timeouts on every remote call — HTTP clients, database, cache, broker; nothing should default to waiting forever`, deep:true, note:`Missing timeouts, not slow services, are what turn a partial outage into a cascading one.`},
+      {text:`Retries with exponential backoff and jitter; retry only idempotent operations; retry budgets and retry storms`, deep:true},
+      {text:`Circuit breakers, bulkheads, rate limiters and time limiters — Resilience4j in Java, Polly in .NET`, deep:true},
+      {text:`Graceful degradation: serve stale cache, return defaults, disable non-essential features under load`},
+      {text:`Load shedding and admission control at the edge: 429 and 503 with Retry-After, using queue depth as the signal`},
+      {text:`Health checks done properly: liveness vs readiness vs startup, and why a deep health check can cascade an outage`, deep:true},
+      {text:`Graceful shutdown: drain in-flight requests, stop consuming, commit offsets, close pools`},
+      {text:`Chaos experiments: kill a node, a broker, a replica — with Toxiproxy or Chaos Mesh — and watch what really happens`},
+      {text:`SLIs, SLOs and error budgets; disaster recovery with RPO, RTO and a rehearsed restore`},
+      {text:`Read Release It! (Michael Nygard) — the stability patterns and antipatterns in one place`},
+    ]
+  },
+  {
+    id:'p8', num:'08', tag:null,
+    title:`Service Architecture`,
+    desc:`How to cut a system into services — and how long to wait before you do.`,
+    items:[
+      {text:`Modular monolith first: enforce boundaries with Spring Modulith or ArchUnit, and extract a service only once a boundary proves itself`, deep:true, note:`A distributed monolith — services that must deploy together — is strictly worse than the monolith you started with.`},
+      {text:`Domain-driven design essentials: bounded contexts, aggregates, ubiquitous language`, deep:true},
+      {text:`Data ownership: database per service, no shared tables, and how to handle the joins you just lost`},
+      {text:`Choosing sync or async per interaction; REST vs gRPC vs messaging`},
+      {text:`API gateway and backend-for-frontend: routing, edge authentication, rate limits, response aggregation for Angular`},
+      {text:`Service discovery and configuration: Kubernetes DNS, ConfigMaps and Secrets versus Eureka and Consul`, note:`Much of the older Spring Cloud Netflix stack is superseded by Kubernetes primitives — know it to read old code, not to start new work.`},
+      {text:`Evolving safely: strangler fig migration, anti-corruption layers, expand/contract schema changes`},
+      {text:`Versioning and compatibility across independently deployed services`},
+      {text:`Write architecture decision records — one per significant choice, including the options you rejected`},
+      {text:`Read Building Microservices (Sam Newman) and Domain-Driven Design Distilled (Vaughn Vernon)`},
+    ]
+  },
+  {
+    id:'p9', num:'09', tag:null,
+    title:`Deepening`,
+    desc:`Where to go once the vocabulary is solid.`,
+    items:[
+      {text:`Designing Data-Intensive Applications (Kleppmann), chapters 5–9`, deep:true, note:`Replication, partitioning, transactions, the trouble with distributed systems, and consistency/consensus. These five chapters are the spine of this entire tab.`},
+      {text:`Read one primary source: the Raft paper, the Dynamo paper, or the Spanner paper`},
+      {text:`Jepsen analyses — pick two databases you use and read what broke under partition`, deep:true},
+      {text:`Follow one system's failure modes end to end: how does your Postgres setup behave when the primary's disk fills?`},
+      {text:`Explain CAP, idempotency and sagas aloud to someone else without notes`},
+    ]
+  },
+];
+
+const SCALING_PHASES = [
+  {
+    id:'p1', num:'01', tag:'Core focus',
+    title:`Measure Before You Scale`,
+    desc:`Almost every scaling mistake is optimising something that was not the bottleneck. Start here, every time.`,
+    items:[
+      {text:`Define SLIs and one real SLO; percentiles (p50/p95/p99) and why averages hide the problem`, deep:true},
+      {text:`Back-of-envelope estimation: QPS, storage per day, bandwidth, connection counts`},
+      {text:`Load testing with k6, Gatling or JMeter: open vs closed workload models, ramping, realistic data`, deep:true, note:`A closed-loop test with fixed virtual users hides queueing collapse — the test slows down with the system. Use an open model (fixed arrival rate) to find the cliff.`},
+      {text:`Little's Law: concurrency = arrival rate × latency, and what it predicts about your thread pools`, deep:true},
+      {text:`Profiling: flame graphs with async-profiler or JFR (dotnet-trace in .NET), plus allocation profiling`},
+      {text:`Find the first bottleneck and fix only that — it is usually a connection pool, a lock, or GC`, deep:true},
+      {text:`Capacity planning: the knee of the latency curve, headroom targets, and what you will do at 2× traffic`},
+      {text:`Continuous performance testing in CI so a regression is caught before production`},
+    ]
+  },
+  {
+    id:'p2', num:'02', tag:null,
+    title:`Stateless Services and Load Balancing`,
+    desc:`The precondition for horizontal scaling. Cheap to get right early, expensive to retrofit.`,
+    items:[
+      {text:`Twelve-Factor statelessness: no in-memory sessions, no local files, no instance-local caches you depend on`},
+      {text:`L4 vs L7 load balancing, and algorithms: round robin, least connections, EWMA / least latency`},
+      {text:`Health checks, connection draining and slow-start, so a deploy does not dump traffic on a cold instance`},
+      {text:`Why sticky sessions undermine elasticity, and what to do instead`},
+      {text:`NGINX, HAProxy and Envoy; what a service mesh adds and what it costs`},
+      {text:`Client-side load balancing, and how retries interact badly with a load balancer that is already failing over`, deep:true},
+      {text:`Idempotency as a scaling prerequisite — you cannot safely retry across instances without it`},
+    ]
+  },
+  {
+    id:'p3', num:'03', tag:'Core focus',
+    title:`Caching Strategy`,
+    desc:`The cheapest scaling lever and the richest source of subtle bugs. Mechanics live in the Java tab; this is the thinking.`,
+    items:[
+      {text:`Where to cache: browser, CDN, edge, gateway, application, database — and the invalidation cost of each layer`},
+      {text:`Patterns: cache-aside, read-through, write-through, write-behind, refresh-ahead`, deep:true},
+      {text:`Invalidation strategy: TTL design, event-driven eviction, and versioned keys instead of deletes`, deep:true, note:`Versioned keys — append a version to the cache key and bump it — sidestep most of the races that plague explicit deletes.`},
+      {text:`Cache stampede: request coalescing, jittered TTLs, early recomputation`, deep:true},
+      {text:`Cache penetration and negative caching; bloom filters for existence checks`},
+      {text:`Sizing: working set, hit ratio targets, eviction policies (LRU, LFU, allkeys-lru) and what a low hit rate is telling you`},
+      {text:`HTTP caching: Cache-Control, ETag, stale-while-revalidate, and a CDN in front of both the SPA and the API`},
+      {text:`Two-level caching (in-process plus shared) and the coherence problem it creates`, deep:true},
+      {text:`When not to cache: write-heavy data, low reuse, and correctness-critical reads`},
+    ]
+  },
+  {
+    id:'p4', num:'04', tag:'Core focus',
+    title:`Scaling the Database`,
+    desc:`Usually the real bottleneck. Climb this ladder in order — each rung is cheaper to undo than the next.`,
+    items:[
+      {text:`The ladder: query and index tuning → connection pooling → caching → read replicas → partitioning → sharding`, deep:true, note:`Most systems never need to leave the first four rungs. Sharding is the hardest thing on this page to undo.`},
+      {text:`Query and index tuning first: read the plan, add the covering index, kill the N+1`},
+      {text:`Connection pooling: why more connections make Postgres slower, pool sizing, and PgBouncer's transaction-pooling caveats`, deep:true},
+      {text:`Read replicas: routing read-only work, and handling replication lag for reads that follow a write`, deep:true},
+      {text:`Table partitioning: range, list and hash; retention by dropping partitions instead of deleting rows`},
+      {text:`Sharding: shard-key choice, cross-shard queries and transactions, resharding, and directory vs algorithmic routing`, deep:true},
+      {text:`Write hotspots: hot rows, counter contention, batching, and queue-then-write`, deep:true},
+      {text:`CQRS read models and materialised views for queries too expensive to serve from the write model`},
+      {text:`Polyglot persistence: when the workload has outgrown Postgres — OLAP (ClickHouse, BigQuery), search (OpenSearch), time-series, key-value`},
+      {text:`Multi-tenancy at the data layer: shared schema, schema per tenant, database per tenant`},
+    ]
+  },
+  {
+    id:'p5', num:'05', tag:'Core focus',
+    title:`Asynchrony and Load Management`,
+    desc:`Controlling how much work enters the system, and when. The difference between degrading and collapsing.`,
+    items:[
+      {text:`Decide what must be synchronous and move everything else off the request path`},
+      {text:`Queue-based load leveling: absorbing spikes instead of provisioning for them`},
+      {text:`Bounded queues as a deliberate design choice`, deep:true, note:`An unbounded queue does not remove a throughput problem — it converts it into an out-of-memory crash, later, with the work already accepted.`},
+      {text:`Backpressure end to end, and consumer lag as the primary health signal for async work`, deep:true},
+      {text:`Rate limiting algorithms: token bucket, leaky bucket, fixed and sliding window; distributed counters`, deep:true},
+      {text:`Throttling, quotas and fair sharing so one tenant cannot starve the rest`},
+      {text:`Load shedding and admission control: reject early, prioritise, and protect the critical path`},
+      {text:`Batching, debouncing and write coalescing`},
+      {text:`Why a long timeout in front of a full queue is worse than failing fast`, deep:true},
+    ]
+  },
+  {
+    id:'p6', num:'06', tag:null,
+    title:`Elasticity and Runtime`,
+    desc:`Adding and removing capacity automatically, and the runtime details that make that go wrong.`,
+    items:[
+      {text:`Horizontal vs vertical scaling — and when vertical is still the correct, boring answer`},
+      {text:`Autoscaling on the right signal: CPU, requests per second, queue depth (KEDA), or a custom metric`, deep:true},
+      {text:`Scale-up lag and cold starts: JVM JIT warm-up, .NET tiered compilation, connection pool priming, warm pools`, deep:true},
+      {text:`Resource requests and limits, and how a CPU limit silently changes GC threads and default pool sizes`},
+      {text:`Connection storms on scale-out — every new replica opens a pool, and the database notices`, deep:true},
+      {text:`Scale-to-zero and its trade-offs; serverless as a scaling model`},
+      {text:`Cost awareness: right-sizing, spot and reserved capacity, and the cost of over-provisioned headroom`},
+    ]
+  },
+  {
+    id:'p7', num:'07', tag:null,
+    title:`Global Scale`,
+    desc:`Multi-region is a large step in cost and complexity. Know what you get for it before taking it.`,
+    items:[
+      {text:`Single-region multi-AZ first — and being clear about what that already protects you from`},
+      {text:`Active-passive vs active-active; RPO and RTO as the deciding numbers`},
+      {text:`Global traffic routing: anycast, GeoDNS, and edge front doors`},
+      {text:`Data locality and residency requirements, and cross-region replication lag`},
+      {text:`Multi-region writes and the consistency bill: conflict resolution or a single write region`, deep:true},
+      {text:`Edge caching and edge compute for the SPA and read-heavy endpoints`},
+      {text:`Failover drills: practising a region evacuation before you need one`},
+    ]
+  },
+];
+
+const EVENTS_PHASES = [
+  {
+    id:'p1', num:'01', tag:'Core focus',
+    title:`Why Events`,
+    desc:`The modelling decisions that come before any broker. Getting these wrong is more expensive than choosing the wrong technology.`,
+    items:[
+      {text:`Vocabulary: message, command, event, query; queue vs publish/subscribe vs log`, deep:true, note:`A command is addressed to one handler and may be rejected. An event is a statement of fact addressed to no one. Mixing them up is the most common modelling error.`},
+      {text:`Event kinds: notification, event-carried state transfer, domain event — and what each costs the consumer`},
+      {text:`Synchronous vs asynchronous: what you gain in coupling and failure isolation, and what you pay in debuggability`, deep:true},
+      {text:`Events as a public API: naming, ownership, versioning, and who is allowed to break them`, deep:true},
+      {text:`Choreography vs orchestration as a default posture for a whole system`},
+      {text:`Event storming: discovering events, commands and boundaries with the domain experts`},
+      {text:`When not to use events: request/response is still correct for most reads`},
+    ]
+  },
+  {
+    id:'p2', num:'02', tag:'Core focus',
+    title:`Kafka — The Log Model`,
+    desc:`The broker you will most likely be asked about. Run a local cluster and break it on purpose.`,
+    items:[
+      {text:`Architecture: brokers, topics, partitions, offsets, KRaft — and a local cluster in Docker`},
+      {text:`Durability settings: acks, replication factor, ISR, min.insync.replicas, unclean leader election`, deep:true, note:`acks=all with replication factor 3 and min.insync.replicas=2 is the usual durable baseline. Know exactly what each one gives up.`},
+      {text:`Producers: idempotent producer, retries, batching and linger, compression, and partition key choice`, deep:true},
+      {text:`Ordering: guaranteed within a partition only — key by the entity whose order matters`, deep:true},
+      {text:`Consumers and consumer groups: assignment, eager vs cooperative rebalancing, commit strategies, and max.poll interval`, deep:true},
+      {text:`Consumer lag: what it means, how to alert on it, and why concurrency is capped by partition count`},
+      {text:`Retention, log compaction, and tiered storage — the topic as a replayable source of truth`},
+      {text:`Kafka transactions and read-process-write exactly-once semantics, and precisely where they stop`, deep:true, note:`EOS covers Kafka-to-Kafka. It does not extend to your database or an outbound HTTP call.`},
+    ]
+  },
+  {
+    id:'p3', num:'03', tag:null,
+    title:`Other Brokers, and Choosing One`,
+    desc:`Kafka is not always the answer. Knowing the alternatives is how you avoid a log where a queue would do.`,
+    items:[
+      {text:`RabbitMQ: exchanges (direct, topic, fanout, headers), queues, bindings, acknowledgements, prefetch`, deep:true},
+      {text:`Smart broker vs dumb log: per-message acknowledgement and routing versus replayable offsets`, deep:true, note:`Prefer RabbitMQ for task distribution, per-message retry and complex routing; prefer Kafka when you need replay, high throughput, or many independent consumers of the same stream.`},
+      {text:`Dead-letter exchanges, delayed and scheduled messages, priority queues`},
+      {text:`Managed equivalents: Azure Service Bus and Event Hubs, AWS SQS/SNS/Kinesis, Google Pub/Sub`},
+      {text:`Postgres as a queue with SELECT … FOR UPDATE SKIP LOCKED — when one fewer moving part wins`, deep:true},
+      {text:`Know the names: NATS, Pulsar, Redis Streams, and what niche each fills`},
+      {text:`Write the decision down: pick a broker for one real use case and justify it in an ADR`},
+    ]
+  },
+  {
+    id:'p4', num:'04', tag:'Core focus',
+    title:`Delivery and Correctness`,
+    desc:`How an asynchronous system stays correct when messages arrive twice, late, or out of order — because they will.`,
+    items:[
+      {text:`At-least-once as the practical default, and designing every consumer for duplicates`, deep:true},
+      {text:`Idempotent consumers: dedup keys, inbox tables, and naturally idempotent side effects`, deep:true, note:`The dedup record and the side effect must be written in the same transaction, or you have just moved the dual-write problem.`},
+      {text:`Poison messages: retry with backoff, retry topics, dead-letter topics, and who is paged when the DLQ fills`, deep:true},
+      {text:`What breaks ordering in practice: retries, parallel consumers, rebalances, and partition changes`, deep:true},
+      {text:`Late and out-of-order events: version numbers, reordering buffers, and watermarks`},
+      {text:`Message expiry and TTLs: dropping versus parking a message that is no longer useful`},
+      {text:`Failure injection: kill a consumer mid-batch and prove no event was lost or double-applied`, deep:true},
+    ]
+  },
+  {
+    id:'p5', num:'05', tag:'Core focus',
+    title:`Schemas and Contracts`,
+    desc:`The most common way an event-driven system breaks in production is a schema change nobody coordinated.`,
+    items:[
+      {text:`Serialization formats: JSON, Avro, Protobuf — size, speed, and schema support`},
+      {text:`Schema Registry and compatibility modes: backward, forward, full, none`, deep:true, note:`Pick a compatibility mode before the first consumer ships. Changing it afterwards is a migration, not a setting.`},
+      {text:`Safe evolution: additive fields with defaults, never reuse or renumber a field, never change a type in place`, deep:true},
+      {text:`Envelope design: event id, type, version, occurred-at, correlation id, causation id`, deep:true},
+      {text:`Documenting events with AsyncAPI, and contract tests between producer and consumer`},
+      {text:`Handling a genuinely breaking change: dual publish, upcasting on read, or a versioned topic`, deep:true},
+      {text:`Ownership and governance: who owns a topic, who may consume it, and how deprecation is announced`},
+    ]
+  },
+  {
+    id:'p6', num:'06', tag:'Core focus',
+    title:`Integration Patterns`,
+    desc:`The patterns that make events correct rather than merely asynchronous. The centre of this tab.`,
+    items:[
+      {text:`The dual-write problem: you cannot atomically write your database and your broker`, deep:true, note:`This is the single most important idea in the tab. Every pattern below exists because of it.`},
+      {text:`Transactional outbox: the business row and the outbox row in one transaction, then a relay publishes`, deep:true},
+      {text:`Change data capture with Debezium over Postgres logical decoding — versus a polling publisher`, deep:true},
+      {text:`Inbox pattern: the consumer-side mirror of the outbox, for idempotent consumption`, deep:true},
+      {text:`Sagas in implementation: state machines, compensations, timeouts, and stuck-saga recovery`, deep:true, note:`Look hard at Temporal or Camunda before hand-rolling an orchestrator. Durable timers and retries are most of the work.`},
+      {text:`CQRS: separate write and read models, building projections, and rebuilding one from scratch`},
+      {text:`Event sourcing: events as the source of truth, snapshots, replay — and the real costs`, deep:true, note:`Most systems need events, not event sourcing. Reach for it in audit-critical domains such as ledgers.`},
+      {text:`Claim-check for large payloads, and correlation ids threaded across every hop`},
+    ]
+  },
+  {
+    id:'p7', num:'07', tag:null,
+    title:`Stream Processing`,
+    desc:`When consuming one message at a time is not enough — aggregation, joins, and windows over a stream.`,
+    items:[
+      {text:`Stateless vs stateful processing, and the three main engines: Kafka Streams, Flink, Spark Structured Streaming`},
+      {text:`Windows: tumbling, hopping, sliding and session`},
+      {text:`Event time vs processing time, watermarks, and allowed lateness`, deep:true, note:`Event time is what the business means. Processing time is what is easy. Choosing the easy one is how late data silently disappears from reports.`},
+      {text:`Joins: stream-stream, stream-table, table-table — and the state each one requires`},
+      {text:`State stores, changelog topics, and recovery after a crash`},
+      {text:`Exactly-once in a stream processor, and exactly what it covers`},
+      {text:`Deciding between a stream processor and a plain consumer writing to a database`},
+    ]
+  },
+  {
+    id:'p8', num:'08', tag:null,
+    title:`Operating Event Systems`,
+    desc:`Running this in production, where the failure modes are quiet rather than loud.`,
+    items:[
+      {text:`What to monitor: consumer lag, throughput, DLQ depth, rebalance frequency, end-to-end latency`, deep:true},
+      {text:`Tracing across brokers: propagating context in message headers and using span links for async work`, deep:true},
+      {text:`Replay and backfill: reprocessing safely, and suppressing side effects you do not want to repeat`, deep:true, note:`Design the kill switch for outbound side effects before you need to replay a topic, not during the incident.`},
+      {text:`Partition count planning — raising it later reshuffles keys and breaks per-key ordering`, deep:true},
+      {text:`Topic governance: naming conventions, retention policy, and cleaning up abandoned topics`},
+      {text:`Disaster recovery: MirrorMaker or cluster linking, and the offset translation problem`},
+      {text:`Testing: Testcontainers brokers, consumer contract tests, and a redelivery test in CI`},
+      {text:`Read Designing Event-Driven Systems (Stopford) and Enterprise Integration Patterns (Hohpe & Woolf)`},
+    ]
+  },
+];
+
+const DESIGN_PHASES = [
+  {
+    id:'p1', num:'01', tag:'Core focus',
+    title:`The Method`,
+    desc:`A repeatable structure beats recalled solutions. Use the same one every time until it is automatic.`,
+    items:[
+      {text:`The framework: requirements → constraints and estimates → API → data model → high-level design → deep dive → bottlenecks → trade-offs`, deep:true},
+      {text:`Separate functional from non-functional requirements, and pin down scale, latency and consistency needs before drawing anything`},
+      {text:`Estimation drills: QPS, storage per day, bandwidth, cache working set, connection counts`},
+      {text:`Drawing clearly: components, data flow, and an explicit answer to "where does state live?"`},
+      {text:`State trade-offs out loud — there is no right answer, only defended ones`, deep:true, note:`The strongest signal in a design interview is naming the option you rejected and why. It is also the most useful habit at work.`},
+      {text:`Time management: how long to spend on each stage in a 45-minute conversation`},
+    ]
+  },
+  {
+    id:'p2', num:'02', tag:null,
+    title:`Building Blocks Review`,
+    desc:`The components you will assemble in every problem. Know the selection criteria, not just the names.`,
+    items:[
+      {text:`The standard kit: load balancer, gateway, cache, queue, object store, CDN, search index, OLAP store`},
+      {text:`Data store selection: relational, document, key-value, wide-column, time-series, graph, search — and the access pattern that picks each`, deep:true},
+      {text:`ID generation: UUIDv7, Snowflake, database sequences — sortability, index locality, and hotspotting`, deep:true},
+      {text:`Cross-cutting concerns that appear in every design: idempotency, rate limiting, authentication, multi-tenancy`},
+      {text:`Geospatial indexing: geohash, S2, quadtrees — enough to answer "find nearby"`},
+      {text:`Pagination at scale: offset vs keyset vs cursor, and why offset breaks on page 5,000`},
+    ]
+  },
+  {
+    id:'p3', num:'03', tag:'Core focus',
+    title:`Core Problems`,
+    desc:`Work each one end to end and write it up. Do not read a solution until you have produced your own.`,
+    items:[
+      {text:`URL shortener: ID generation, redirect path latency, caching, click analytics`},
+      {text:`Rate limiter: algorithm choice, distributed counters, accuracy versus cost`},
+      {text:`Notification system: fan-out, channel adapters, user preferences, retries, deduplication`},
+      {text:`News feed: fan-out on write vs on read, the celebrity problem, ranking, pagination`, deep:true},
+      {text:`Chat and real-time messaging: WebSocket fan-out, presence, delivery receipts, offline queue, ordering`, deep:true},
+      {text:`Search and autocomplete: inverted index, tries, ranking, freshness`},
+      {text:`Web crawler: frontier, politeness, dedupe, and distributed coordination`},
+    ]
+  },
+  {
+    id:'p4', num:'04', tag:null,
+    title:`Harder Problems`,
+    desc:`These reward the distributed-systems and event-driven tabs directly.`,
+    items:[
+      {text:`Payment or ledger service: double-entry, idempotency, exactly-once effect, reconciliation, immutable audit`, deep:true},
+      {text:`Ride sharing or food delivery: geo indexing, matching, order state machine, driver location stream`, deep:true},
+      {text:`Event ingestion and analytics pipeline: Kafka, partitioning, batch vs stream, OLAP store, late data`, deep:true},
+      {text:`Video streaming: upload, transcoding pipeline, CDN distribution, adaptive bitrate`},
+      {text:`File storage and sync: chunking, deduplication, delta sync, conflict resolution`, deep:true},
+      {text:`Distributed job scheduler: leader election, at-least-once execution, catch-up and backfill`},
+      {text:`Multi-tenant SaaS: isolation models, noisy neighbours, per-tenant limits and cost attribution`},
+      {text:`Ticketing or inventory with hard limits: overselling, holds, and the consistency you cannot give up`, deep:true},
+    ]
+  },
+  {
+    id:'p5', num:'05', tag:null,
+    title:`Deepening and Review`,
+    desc:`Turning practice into something you can defend under pressure.`,
+    items:[
+      {text:`Write each design as a 1–2 page document with a diagram and an explicit trade-offs section`},
+      {text:`Explain one design aloud, unprompted, in under ten minutes`},
+      {text:`Read three public postmortems and name the missing control in each`, deep:true},
+      {text:`Redesign a system you have actually shipped, and list what you would change now`, deep:true},
+      {text:`Read one real architecture deep-dive or paper: Kafka, Cassandra, Spanner, or DynamoDB`},
+      {text:`Do mock interviews — and be the interviewer at least once`},
     ]
   },
 ];
@@ -736,11 +1067,28 @@ const DOTNET_TO_JAVA = [
   ['HttpClient', 'RestClient / WebClient'],
 ];
 
+const MESSAGING_MAP = [
+  ['Azure Service Bus queue', 'RabbitMQ queue / SQS'],
+  ['Service Bus topic + subscription', 'RabbitMQ topic exchange / SNS'],
+  ['Azure Event Hubs', 'Apache Kafka / Kinesis'],
+  ['Event Hubs consumer group', 'Kafka consumer group'],
+  ['Event Hubs partition + checkpoint', 'Kafka partition + offset'],
+  ['Azure Event Grid', 'Kafka topic fan-out / CloudEvents'],
+  ['Service Bus dead-letter queue', 'Kafka DLT / Rabbit dead-letter exchange'],
+  ['Service Bus sessions', 'Kafka partition key ordering'],
+  ['Service Bus peek-lock + complete', 'Rabbit ack / Kafka offset commit'],
+  ['MassTransit / NServiceBus', 'Spring for Kafka / Spring Cloud Stream'],
+  ['Azure Functions trigger', '@KafkaListener / @RabbitListener'],
+  ['Durable Functions', 'Temporal / Camunda (saga orchestration)'],
+  ['Azure Stream Analytics', 'Kafka Streams / Flink'],
+  ['Schema Registry (Event Hubs)', 'Confluent Schema Registry'],
+];
+
 const PATHS = [
   {
     id:'azure',
     label:'Azure',
-    sublabel:'Cloud platform for your .NET stack',
+    sublabel:'One cloud, in depth',
     kicker:'Azure learning path',
     title:'Azure Study Path',
     subtitle:'Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>az login</code> to a certified, production-shaped deployment.',
@@ -749,12 +1097,52 @@ const PATHS = [
   {
     id:'java',
     label:'Java',
-    sublabel:'Backend, distributed systems, scale',
+    sublabel:'Language, Spring, persistence',
     kicker:'Java learning path',
     title:'Java Full-Stack Study Path',
-    subtitle:'Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>javac</code> to distributed, event-driven systems that scale.',
+    subtitle:'Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>javac</code> to a production Spring Boot service. The systems tabs alongside this one are language-neutral.',
     map:{heads:['.NET', 'Java'], title:'Your .NET → Java map', hint:'what each tool you know becomes', rows:DOTNET_TO_JAVA},
+    // v2: the systems phases moved out to their own tabs, so phase numbering shifted
+    // and old p12+ checkmarks would land on different items. Fresh key rather than misalign.
+    store:'java-v2',
     phases:JAVA_PHASES,
+  },
+  {
+    id:'distributed',
+    label:'Distributed Systems',
+    sublabel:'Failure, consistency, consensus',
+    kicker:'Distributed systems',
+    title:'Distributed Systems',
+    subtitle:'The theory underneath every other tab — partial failure, consistency, replication, consensus, and the patterns that keep a multi-service system correct. Language-neutral.',
+    phases:DISTRIBUTED_PHASES,
+  },
+  {
+    id:'scaling',
+    label:'Scaling',
+    sublabel:'From one instance to many',
+    kicker:'Scaling systems',
+    title:'Scaling Systems',
+    subtitle:'Measuring first, then the levers in the order they are usually worth pulling — stateless services, caching, the database ladder, load management, elasticity. Language-neutral.',
+    phases:SCALING_PHASES,
+  },
+  {
+    id:'events',
+    label:'Event-Driven',
+    sublabel:'Kafka, patterns, correctness',
+    kicker:'Event-driven architecture',
+    title:'Event-Driven Architecture',
+    subtitle:'Brokers, delivery guarantees, schemas, and the integration patterns — outbox, CDC, saga, CQRS — that make an asynchronous system correct rather than merely asynchronous.',
+    map:{heads:['Azure / .NET', 'Kafka / Java / OSS'], title:'Messaging equivalents', hint:'what you know, in the open-source stack', rows:MESSAGING_MAP},
+    phases:EVENTS_PHASES,
+  },
+  {
+    id:'design',
+    label:'System Design',
+    sublabel:'Apply it under constraints',
+    kicker:'System design practice',
+    title:'System Design Practice',
+    subtitle:'Where the other tabs get spent — a repeatable method, the building blocks, and a set of problems to work end to end and write up.',
+    phases:DESIGN_PHASES,
   },
 ];
 
@@ -778,10 +1166,14 @@ function storeSet(key, value){
   try { localStorage.setItem(key, value); }
   catch (e) { storageOk = false; }
 }
+function storeKeyFor(pathId){
+  const path = PATHS.find(function(p){ return p.id === pathId; });
+  return STORE_PREFIX + ((path && path.store) || pathId);
+}
 function loadStates(){
   PATHS.forEach(function(path){
     const set = new Set();
-    const raw = storeGet(STORE_PREFIX + path.id);
+    const raw = storeGet(storeKeyFor(path.id));
     if (raw){
       try {
         const ids = JSON.parse(raw);
@@ -792,7 +1184,7 @@ function loadStates(){
   });
 }
 function saveState(pathId){
-  storeSet(STORE_PREFIX + pathId, JSON.stringify(Array.from(states[pathId])));
+  storeSet(storeKeyFor(pathId), JSON.stringify(Array.from(states[pathId])));
 }
 
 function esc(s){
@@ -822,12 +1214,12 @@ function renderTabs(){
         return '<button class="tab" role="tab" type="button" id="tab-' + path.id + '"' +
           ' aria-controls="panel-' + path.id + '" aria-selected="' + (i === 0) + '"' +
           ' tabindex="' + (i === 0 ? '0' : '-1') + '" data-tab="' + path.id + '" data-path="' + path.id + '">' +
-          '<span class="tab-label">' + esc(path.label) + '</span>' +
-          '<span class="tab-sub">' + esc(path.sublabel) + '</span>' +
-          '<span class="tab-meta">' +
-            '<span class="bar"><span class="bar-fill" data-tabfill="' + path.id + '"></span></span>' +
+          '<span class="tab-top">' +
+            '<span class="tab-label">' + esc(path.label) + '</span>' +
             '<span class="tab-count" data-tabcount="' + path.id + '"></span>' +
           '</span>' +
+          '<span class="tab-sub">' + esc(path.sublabel) + '</span>' +
+          '<span class="bar"><span class="bar-fill" data-tabfill="' + path.id + '"></span></span>' +
         '</button>';
       }).join('') +
     '</div>' +
