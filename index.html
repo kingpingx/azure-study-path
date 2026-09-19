@@ -1,6 +1,11 @@
-<title>Azure Study Path</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Paths</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<style id="page-style">
+<style>
 *{box-sizing:border-box;}
 :root{
   color-scheme:light dark;
@@ -56,30 +61,66 @@
   --danger:#e08079;
   --shadow:0 1px 3px rgba(0,0,0,.4);
 }
+/* Per-path accent. Azure keeps the root blue; Java shifts to teal. */
+[data-path="java"]{
+  --accent:#0f766e;
+  --accent-soft:#d9f2ee;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) [data-path="java"]{
+    --accent:#5fd0c3;
+    --accent-soft:#12403c;
+  }
+}
+:root[data-theme="dark"] [data-path="java"]{
+  --accent:#5fd0c3;
+  --accent-soft:#12403c;
+}
 html,body{height:100%;}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.5;-webkit-font-smoothing:antialiased;}
 img{max-width:100%;}
 [hidden]{display:none!important;}
 a{color:inherit;}
+code{font-family:var(--font-mono);font-size:.9em;}
 .wrap{max-width:860px;margin:0 auto;padding:28px 20px 90px;}
 .kicker{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;color:var(--accent);font-weight:600;margin:0 0 10px;}
 h1{font-family:var(--font-display);font-size:clamp(1.6rem,4.5vw,2.3rem);font-weight:800;margin:0 0 10px;text-wrap:balance;letter-spacing:-.01em;}
 .subtitle{color:var(--text-dim);font-size:.98rem;line-height:1.55;max-width:62ch;margin:0 0 22px;}
 .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;flex:1;}
 .bar.big{height:10px;}
-.bar-fill{height:100%;background:var(--accent);border-radius:inherit;transition:width .25s ease;}
+.bar-fill{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .25s ease;}
 .overall{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
 .overall-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--text-dim);}
 .save-status{padding:3px 10px;border-radius:999px;background:var(--surface-2);font-size:.74rem;white-space:nowrap;}
-.status-saving{color:var(--accent);}
-.status-error{color:var(--danger);}
-.status-local{color:var(--text-faint);}
+.save-status.status-local{color:var(--text-faint);}
 .legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:22px;font-size:.8rem;color:var(--text-dim);}
 .legend-item{display:flex;align-items:center;gap:6px;}
 .pill{display:inline-flex;align-items:center;font-family:var(--font-mono);font-weight:600;font-size:.66rem;letter-spacing:.02em;padding:2px 8px;border-radius:999px;line-height:1.6;}
 .pill.gold{background:var(--gold-soft);color:var(--gold);}
+/* Tabs */
+.site-head{margin-bottom:20px;}
+.site-kicker{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;color:var(--text-faint);font-weight:600;margin:0 0 12px;}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.tab{flex:1 1 210px;display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:inherit;cursor:pointer;box-shadow:var(--shadow);}
+.tab:hover{border-color:var(--accent);}
+.tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft);}
+.tab-label{font-family:var(--font-display);font-weight:700;font-size:1rem;}
+.tab-sub{font-size:.78rem;color:var(--text-dim);line-height:1.3;}
+.tab-meta{display:flex;align-items:center;gap:8px;margin-top:4px;}
+.tab-count{font-family:var(--font-mono);font-size:.7rem;color:var(--text-dim);font-variant-numeric:tabular-nums;white-space:nowrap;}
+/* .NET -> Java map */
+details.map{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:22px;}
+details.map>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;font-family:var(--font-display);font-weight:700;font-size:.98rem;}
+details.map>summary::-webkit-details-marker{display:none;}
+details.map>summary::after{content:'+';font-family:var(--font-mono);font-size:1.1rem;color:var(--accent);}
+details.map[open]>summary::after{content:'\2212';}
+.map-hint{font-family:var(--font-body);font-weight:400;font-size:.8rem;color:var(--text-dim);}
+.map-grid{display:grid;grid-template-columns:1fr 1fr;padding:0 18px 12px;font-size:.84rem;}
+.map-grid>div{padding:7px 8px;border-top:1px solid var(--border);}
+.map-grid .head{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.07em;font-size:.68rem;color:var(--text-faint);border-top:0;}
+.map-grid .to{color:var(--accent);font-weight:500;}
 .navchips{display:flex;gap:8px;overflow-x:auto;padding-block:10px;margin:0 -20px 26px;padding-inline:20px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;}
-.chip{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--text);min-width:126px;}
+.chip{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--text);min-width:126px;max-width:170px;}
 .chip:hover,.chip:focus-visible{border-color:var(--accent);}
 .chip.core{border-top:2px solid var(--gold);}
 .chip.complete{border-color:var(--accent);background:var(--accent-soft);}
@@ -108,28 +149,30 @@ footer.page-footer{color:var(--text-faint);font-size:.78rem;text-align:center;ma
   .wrap{padding:20px 16px 70px;}
   .phase{padding:18px 16px 14px;}
   .chip{min-width:108px;}
+  .tab{flex:1 1 100%;}
+  .map-grid{padding:0 10px 10px;font-size:.8rem;}
 }
 </style>
+</head>
+<body>
 <div id="app"></div>
-<script id="state-data" type="application/json">[]</script>
 <script>
-const SELF_SCRIPT = document.currentScript.textContent;
-const STYLE_CSS = document.getElementById('page-style').textContent;
-const FONT_LINK = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">';
+// Item ids are derived from position (p<phase>i<index>) and saved progress is keyed on them,
+// so add new items at the END of a phase's list to keep existing progress intact.
 
-const PHASES = [
+const AZURE_PHASES = [
   {
     id:'p1', num:'01', tag:null,
     title:`Prerequisites and Environment Setup`,
     desc:`Get your tools and account ready before touching any service.`,
     items:[
-      {id:'p1i1', text:`Create an Azure account — free tier or your organization's subscription`},
-      {id:'p1i2', text:`Install the Azure CLI (az) and sign in with az login`},
-      {id:'p1i3', text:`Install Azure PowerShell (the Az module) — optional if you prefer the CLI`},
-      {id:'p1i4', text:`Install VS Code extensions: Azure Tools, Azure App Service, Bicep`},
-      {id:'p1i5', text:`Confirm the Azure workload is installed in Visual Studio, for one-click publish`},
-      {id:'p1i6', text:`Tour the Azure Portal — resource groups, subscriptions, the cost blade`},
-      {id:'p1i7', text:`Set up Azure Cloud Shell as a browser-based fallback`},
+      {text:`Create an Azure account — free tier or your organization's subscription`},
+      {text:`Install the Azure CLI (az) and sign in with az login`},
+      {text:`Install Azure PowerShell (the Az module) — optional if you prefer the CLI`},
+      {text:`Install VS Code extensions: Azure Tools, Azure App Service, Bicep`},
+      {text:`Confirm the Azure workload is installed in Visual Studio, for one-click publish`},
+      {text:`Tour the Azure Portal — resource groups, subscriptions, the cost blade`},
+      {text:`Set up Azure Cloud Shell as a browser-based fallback`},
     ]
   },
   {
@@ -137,13 +180,13 @@ const PHASES = [
     title:`Core Cloud Concepts`,
     desc:`The vocabulary every later phase assumes you already know.`,
     items:[
-      {id:'p2i1', text:`IaaS vs PaaS vs SaaS — and which Azure services fall where`},
-      {id:'p2i2', text:`Regions, availability zones, and region pairs`},
-      {id:'p2i3', text:`Subscriptions, management groups, and resource groups — the hierarchy`},
-      {id:'p2i4', text:`Azure Resource Manager (ARM) — how every action becomes a resource operation`, deep:true, note:`Understand this first — Bicep, the CLI and the Portal all call the same Resource Manager API underneath.`},
-      {id:'p2i5', text:`Naming conventions and a tagging strategy (env, owner, cost-center)`},
-      {id:'p2i6', text:`Pricing Calculator and Cost Management plus Budgets`},
-      {id:'p2i7', text:`Optional: sit the AZ-900 Azure Fundamentals exam`},
+      {text:`IaaS vs PaaS vs SaaS — and which Azure services fall where`},
+      {text:`Regions, availability zones, and region pairs`},
+      {text:`Subscriptions, management groups, and resource groups — the hierarchy`},
+      {text:`Azure Resource Manager (ARM) — how every action becomes a resource operation`, deep:true, note:`Understand this first — Bicep, the CLI and the Portal all call the same Resource Manager API underneath.`},
+      {text:`Naming conventions and a tagging strategy (env, owner, cost-center)`},
+      {text:`Pricing Calculator and Cost Management plus Budgets`},
+      {text:`Optional: sit the AZ-900 Azure Fundamentals exam`},
     ]
   },
   {
@@ -151,14 +194,14 @@ const PHASES = [
     title:`Identity and Access — Microsoft Entra ID`,
     desc:`Almost everything after this — App Service, Key Vault, your Angular SPA — sits on top of identity. Worth the extra time.`,
     items:[
-      {id:'p3i1', text:`Microsoft Entra ID basics: tenant, users, groups, app registrations`},
-      {id:'p3i2', text:`Role-Based Access Control (RBAC): built-in roles, custom roles, and scope`},
-      {id:'p3i3', text:`Managed identities — system-assigned vs user-assigned`, deep:true, note:`How App Service talks to Key Vault and Postgres with zero stored secrets. You will lean on this in nearly every phase after this one.`},
-      {id:'p3i4', text:`OAuth 2.0 and OpenID Connect flows: Authorization Code with PKCE, Client Credentials`, deep:true, note:`PKCE is the flow your Angular SPA uses via MSAL; Client Credentials is for service-to-service calls with no user present.`},
-      {id:'p3i5', text:`Secure an Angular SPA with @azure/msal-angular`},
-      {id:'p3i6', text:`Secure an ASP.NET Core Web API with Microsoft.Identity.Web / JWT bearer validation`},
-      {id:'p3i7', text:`App registrations: redirect URIs, API permissions, exposing an API scope`},
-      {id:'p3i8', text:`Microsoft Entra External ID (formerly B2C) — for customer sign-up and sign-in`},
+      {text:`Microsoft Entra ID basics: tenant, users, groups, app registrations`},
+      {text:`Role-Based Access Control (RBAC): built-in roles, custom roles, and scope`},
+      {text:`Managed identities — system-assigned vs user-assigned`, deep:true, note:`How App Service talks to Key Vault and Postgres with zero stored secrets. You will lean on this in nearly every phase after this one.`},
+      {text:`OAuth 2.0 and OpenID Connect flows: Authorization Code with PKCE, Client Credentials`, deep:true, note:`PKCE is the flow your Angular SPA uses via MSAL; Client Credentials is for service-to-service calls with no user present.`},
+      {text:`Secure an Angular SPA with @azure/msal-angular`},
+      {text:`Secure an ASP.NET Core Web API with Microsoft.Identity.Web / JWT bearer validation`},
+      {text:`App registrations: redirect URIs, API permissions, exposing an API scope`},
+      {text:`Microsoft Entra External ID (formerly B2C) — for customer sign-up and sign-in`},
     ]
   },
   {
@@ -166,15 +209,15 @@ const PHASES = [
     title:`Compute for .NET Workloads`,
     desc:`Where your ASP.NET Core API actually runs.`,
     items:[
-      {id:'p4i1', text:`App Service fundamentals: App Service Plans, pricing tiers, regions`},
-      {id:'p4i2', text:`Deploy an ASP.NET Core Web API to App Service from Visual Studio, VS Code, or the CLI`, deep:true, note:`Start with a right-click publish, then redo the same deploy through a pipeline once you reach Phase 9.`},
-      {id:'p4i3', text:`App settings and connection strings — how they map onto appsettings.json`},
-      {id:'p4i4', text:`Deployment slots — stage a release, then swap it into production`, deep:true, note:`A swap instead of a redeploy is what makes a release a non-event instead of a maintenance window.`},
-      {id:'p4i5', text:`Manual scaling vs autoscale rules`},
-      {id:'p4i6', text:`Azure Functions, C# isolated worker model: HTTP and timer triggers, bindings`},
-      {id:'p4i7', text:`Containerize a .NET API with Docker and push it to Azure Container Registry`},
-      {id:'p4i8', text:`Azure Container Apps — deploy the containerized API, revisions, scale-to-zero`},
-      {id:'p4i9', text:`Azure Kubernetes Service — know what it is for; do not rabbit-hole into it yet`},
+      {text:`App Service fundamentals: App Service Plans, pricing tiers, regions`},
+      {text:`Deploy an ASP.NET Core Web API to App Service from Visual Studio, VS Code, or the CLI`, deep:true, note:`Start with a right-click publish, then redo the same deploy through a pipeline once you reach Phase 9.`},
+      {text:`App settings and connection strings — how they map onto appsettings.json`},
+      {text:`Deployment slots — stage a release, then swap it into production`, deep:true, note:`A swap instead of a redeploy is what makes a release a non-event instead of a maintenance window.`},
+      {text:`Manual scaling vs autoscale rules`},
+      {text:`Azure Functions, C# isolated worker model: HTTP and timer triggers, bindings`},
+      {text:`Containerize a .NET API with Docker and push it to Azure Container Registry`},
+      {text:`Azure Container Apps — deploy the containerized API, revisions, scale-to-zero`},
+      {text:`Azure Kubernetes Service — know what it is for; do not rabbit-hole into it yet`},
     ]
   },
   {
@@ -182,15 +225,15 @@ const PHASES = [
     title:`Data Platform — PostgreSQL on Azure`,
     desc:`Your database. This is the section to actually slow down on.`,
     items:[
-      {id:'p5i1', text:`Azure Database for PostgreSQL – Flexible Server: provisioning, burstable vs general-purpose tiers`, deep:true, note:`Burstable (B-series) is fine for learning; move to General Purpose before anything real depends on it.`},
-      {id:'p5i2', text:`Networking modes: public access with firewall rules vs VNet-integrated private access`, deep:true, note:`Start with firewall rules to move fast, then switch to private access before production — see Phase 7.`},
-      {id:'p5i3', text:`Connect from .NET with Npgsql and the EF Core Npgsql provider`},
-      {id:'p5i4', text:`Run EF Core migrations against Azure Postgres from a CI/CD pipeline`, deep:true, note:`Decide deliberately: migrations run automatically on deploy, or as a manual step. Automatic is convenient until one locks a large table mid-deploy.`},
-      {id:'p5i5', text:`Backups, point-in-time restore, and zone-redundant high availability`},
-      {id:'p5i6', text:`Connection pooling — Flexible Server's built-in PgBouncer vs client-side pooling`},
-      {id:'p5i7', text:`Azure Cache for Redis — offload read-heavy queries from Postgres`},
-      {id:'p5i8', text:`Azure Blob Storage: containers, SAS tokens, the Azure.Storage.Blobs SDK from C#`},
-      {id:'p5i9', text:`Know the names: Azure SQL and Cosmos DB — when you would reach for them instead of Postgres`},
+      {text:`Azure Database for PostgreSQL – Flexible Server: provisioning, burstable vs general-purpose tiers`, deep:true, note:`Burstable (B-series) is fine for learning; move to General Purpose before anything real depends on it.`},
+      {text:`Networking modes: public access with firewall rules vs VNet-integrated private access`, deep:true, note:`Start with firewall rules to move fast, then switch to private access before production — see Phase 7.`},
+      {text:`Connect from .NET with Npgsql and the EF Core Npgsql provider`},
+      {text:`Run EF Core migrations against Azure Postgres from a CI/CD pipeline`, deep:true, note:`Decide deliberately: migrations run automatically on deploy, or as a manual step. Automatic is convenient until one locks a large table mid-deploy.`},
+      {text:`Backups, point-in-time restore, and zone-redundant high availability`},
+      {text:`Connection pooling — Flexible Server's built-in PgBouncer vs client-side pooling`},
+      {text:`Azure Cache for Redis — offload read-heavy queries from Postgres`},
+      {text:`Azure Blob Storage: containers, SAS tokens, the Azure.Storage.Blobs SDK from C#`},
+      {text:`Know the names: Azure SQL and Cosmos DB — when you would reach for them instead of Postgres`},
     ]
   },
   {
@@ -198,12 +241,12 @@ const PHASES = [
     title:`Hosting the Angular Frontend`,
     desc:`Where the SPA lives, and how it reaches your API.`,
     items:[
-      {id:'p6i1', text:`Azure Static Web Apps: deploy an Angular build, free tier, per-PR staging environments`},
-      {id:'p6i2', text:`Static Web Apps built-in auth vs bringing your own MSAL flow`},
-      {id:'p6i3', text:`Alternative: serve Angular from App Service, same host as the API or separate`},
-      {id:'p6i4', text:`Azure CDN / Azure Front Door for caching static assets globally`, deep:true, note:`Front Door also gives you a WAF and path-based routing — worth it once the SPA and API live on different hosts.`},
-      {id:'p6i5', text:`Configure CORS on the ASP.NET Core API for the SPA's origin`},
-      {id:'p6i6', text:`Environment-specific config in Angular (environment.ts) mapped to Azure app settings`},
+      {text:`Azure Static Web Apps: deploy an Angular build, free tier, per-PR staging environments`},
+      {text:`Static Web Apps built-in auth vs bringing your own MSAL flow`},
+      {text:`Alternative: serve Angular from App Service, same host as the API or separate`},
+      {text:`Azure CDN / Azure Front Door for caching static assets globally`, deep:true, note:`Front Door also gives you a WAF and path-based routing — worth it once the SPA and API live on different hosts.`},
+      {text:`Configure CORS on the ASP.NET Core API for the SPA's origin`},
+      {text:`Environment-specific config in Angular (environment.ts) mapped to Azure app settings`},
     ]
   },
   {
@@ -211,11 +254,11 @@ const PHASES = [
     title:`Networking and Private Connectivity`,
     desc:`Locking things down so only your app can reach your data.`,
     items:[
-      {id:'p7i1', text:`Virtual Networks (VNet), subnets, Network Security Groups`},
-      {id:'p7i2', text:`VNet Integration for App Service — routing outbound traffic through the VNet`},
-      {id:'p7i3', text:`Private Endpoints for Postgres, Key Vault, and Storage`, deep:true, note:`The production-readiness step most tutorials skip. Budget real time to wire one up end-to-end, not just read about it.`},
-      {id:'p7i4', text:`Private DNS zones — why a private endpoint is useless without one`},
-      {id:'p7i5', text:`Application Gateway vs Front Door vs Load Balancer — when each applies`},
+      {text:`Virtual Networks (VNet), subnets, Network Security Groups`},
+      {text:`VNet Integration for App Service — routing outbound traffic through the VNet`},
+      {text:`Private Endpoints for Postgres, Key Vault, and Storage`, deep:true, note:`The production-readiness step most tutorials skip. Budget real time to wire one up end-to-end, not just read about it.`},
+      {text:`Private DNS zones — why a private endpoint is useless without one`},
+      {text:`Application Gateway vs Front Door vs Load Balancer — when each applies`},
     ]
   },
   {
@@ -223,11 +266,11 @@ const PHASES = [
     title:`Security`,
     desc:`Nothing sensitive should ever sit in appsettings.json.`,
     items:[
-      {id:'p8i1', text:`Azure Key Vault: secrets, keys, and certificates`},
-      {id:'p8i2', text:`Reference Key Vault secrets from App Service via Managed Identity`, deep:true, note:`Combine with the managed identity from Phase 3 so the API authenticates to Key Vault with no client secret anywhere.`},
-      {id:'p8i3', text:`Azure App Configuration — centralized settings and feature flags across environments`},
-      {id:'p8i4', text:`Key Vault access policies vs the Azure RBAC permission model`},
-      {id:'p8i5', text:`Rotate secrets and connection strings without redeploying`},
+      {text:`Azure Key Vault: secrets, keys, and certificates`},
+      {text:`Reference Key Vault secrets from App Service via Managed Identity`, deep:true, note:`Combine with the managed identity from Phase 3 so the API authenticates to Key Vault with no client secret anywhere.`},
+      {text:`Azure App Configuration — centralized settings and feature flags across environments`},
+      {text:`Key Vault access policies vs the Azure RBAC permission model`},
+      {text:`Rotate secrets and connection strings without redeploying`},
     ]
   },
   {
@@ -235,14 +278,14 @@ const PHASES = [
     title:`CI/CD and Infrastructure as Code`,
     desc:`How code and infrastructure actually get to Azure, repeatably.`,
     items:[
-      {id:'p9i1', text:`Pick one: Azure DevOps Pipelines or GitHub Actions — learn it properly rather than both shallowly`},
-      {id:'p9i2', text:`Build-and-deploy pipeline for the ASP.NET Core API: build, test, publish, deploy to App Service`, deep:true},
-      {id:'p9i3', text:`Build-and-deploy pipeline for the Angular app: npm build, deploy to Static Web Apps`},
-      {id:'p9i4', text:`Environment promotion: dev to staging to prod, with slot swaps or approval gates`},
-      {id:'p9i5', text:`Bicep fundamentals: resources, parameters, variables, outputs`, deep:true, note:`Bicep compiles down to the same ARM JSON — learn it directly rather than hand-writing the JSON it replaces.`},
-      {id:'p9i6', text:`Bicep modules — split a real environment (App Service, Postgres, Key Vault) into reusable pieces`},
-      {id:'p9i7', text:`Secrets in pipelines: service connections and OIDC federation instead of stored credentials`},
-      {id:'p9i8', text:`Optional: Terraform, only if your team is already multi-cloud`},
+      {text:`Pick one: Azure DevOps Pipelines or GitHub Actions — learn it properly rather than both shallowly`},
+      {text:`Build-and-deploy pipeline for the ASP.NET Core API: build, test, publish, deploy to App Service`, deep:true},
+      {text:`Build-and-deploy pipeline for the Angular app: npm build, deploy to Static Web Apps`},
+      {text:`Environment promotion: dev to staging to prod, with slot swaps or approval gates`},
+      {text:`Bicep fundamentals: resources, parameters, variables, outputs`, deep:true, note:`Bicep compiles down to the same ARM JSON — learn it directly rather than hand-writing the JSON it replaces.`},
+      {text:`Bicep modules — split a real environment (App Service, Postgres, Key Vault) into reusable pieces`},
+      {text:`Secrets in pipelines: service connections and OIDC federation instead of stored credentials`},
+      {text:`Optional: Terraform, only if your team is already multi-cloud`},
     ]
   },
   {
@@ -250,12 +293,12 @@ const PHASES = [
     title:`Monitoring and Observability`,
     desc:`How you will know something broke before a user tells you.`,
     items:[
-      {id:'p10i1', text:`Application Insights: instrument ASP.NET Core with the SDK`, deep:true},
-      {id:'p10i2', text:`Track requests, dependencies (including Postgres calls), and exceptions end-to-end`, deep:true},
-      {id:'p10i3', text:`Application Insights JavaScript SDK in the Angular app — connect frontend and backend traces`},
-      {id:'p10i4', text:`Azure Monitor and the Log Analytics workspace — where the logs actually land`},
-      {id:'p10i5', text:`Kusto Query Language (KQL) — enough to write your own basic queries`, deep:true, note:`A handful of patterns — where, summarize, join — cover most real debugging sessions.`},
-      {id:'p10i6', text:`Alerts and Action Groups — get paged before your users complain`},
+      {text:`Application Insights: instrument ASP.NET Core with the SDK`, deep:true},
+      {text:`Track requests, dependencies (including Postgres calls), and exceptions end-to-end`, deep:true},
+      {text:`Application Insights JavaScript SDK in the Angular app — connect frontend and backend traces`},
+      {text:`Azure Monitor and the Log Analytics workspace — where the logs actually land`},
+      {text:`Kusto Query Language (KQL) — enough to write your own basic queries`, deep:true, note:`A handful of patterns — where, summarize, join — cover most real debugging sessions.`},
+      {text:`Alerts and Action Groups — get paged before your users complain`},
     ]
   },
   {
@@ -263,10 +306,10 @@ const PHASES = [
     title:`Messaging and Integration`,
     desc:`Decoupling services once a single API is not enough.`,
     items:[
-      {id:'p11i1', text:`Azure Service Bus: queues vs topics and subscriptions, and when to use each`},
-      {id:'p11i2', text:`Publish and consume Service Bus messages from a .NET background service`},
-      {id:'p11i3', text:`Azure Event Grid — event-driven architecture, in overview`},
-      {id:'p11i4', text:`Know the names: Event Hubs and Logic Apps`},
+      {text:`Azure Service Bus: queues vs topics and subscriptions, and when to use each`},
+      {text:`Publish and consume Service Bus messages from a .NET background service`},
+      {text:`Azure Event Grid — event-driven architecture, in overview`},
+      {text:`Know the names: Event Hubs and Logic Apps`},
     ]
   },
   {
@@ -274,9 +317,9 @@ const PHASES = [
     title:`API Management and Architecture`,
     desc:`Fronting your API properly, and thinking like an architect.`,
     items:[
-      {id:'p12i1', text:`Azure API Management: import your Web API, policies, rate limiting`},
-      {id:'p12i2', text:`The Well-Architected Framework — Reliability, Security, Cost, Operational Excellence, Performance`},
-      {id:'p12i3', text:`Monolith on App Service vs microservices on Container Apps — choosing per project`},
+      {text:`Azure API Management: import your Web API, policies, rate limiting`},
+      {text:`The Well-Architected Framework — Reliability, Security, Cost, Operational Excellence, Performance`},
+      {text:`Monolith on App Service vs microservices on Container Apps — choosing per project`},
     ]
   },
   {
@@ -284,14 +327,14 @@ const PHASES = [
     title:`Capstone — Ship One Real Thing End to End`,
     desc:`Everything above, wired together. Do not skip this — it is where the pieces actually click.`,
     items:[
-      {id:'p13i1', text:`Angular SPA deployed to Static Web Apps`},
-      {id:'p13i2', text:`ASP.NET Core Web API deployed to App Service or Container Apps`},
-      {id:'p13i3', text:`Azure Database for PostgreSQL Flexible Server, with EF Core migrations run by the pipeline`},
-      {id:'p13i4', text:`Sign-in wired through Entra ID: MSAL in Angular, JWT validation in the API`},
-      {id:'p13i5', text:`Every secret in Key Vault, reached via Managed Identity — nothing in source control`},
-      {id:'p13i6', text:`Application Insights wired into both the API and the SPA`},
-      {id:'p13i7', text:`The whole environment defined in Bicep, deployed via GitHub Actions or Azure Pipelines`},
-      {id:'p13i8', text:`A staging slot and swap in place for zero-downtime deploys`},
+      {text:`Angular SPA deployed to Static Web Apps`},
+      {text:`ASP.NET Core Web API deployed to App Service or Container Apps`},
+      {text:`Azure Database for PostgreSQL Flexible Server, with EF Core migrations run by the pipeline`},
+      {text:`Sign-in wired through Entra ID: MSAL in Angular, JWT validation in the API`},
+      {text:`Every secret in Key Vault, reached via Managed Identity — nothing in source control`},
+      {text:`Application Insights wired into both the API and the SPA`},
+      {text:`The whole environment defined in Bicep, deployed via GitHub Actions or Azure Pipelines`},
+      {text:`A staging slot and swap in place for zero-downtime deploys`},
     ]
   },
   {
@@ -299,170 +342,661 @@ const PHASES = [
     title:`Certification Path`,
     desc:`Optional, but worth structuring — each exam assumes the last.`,
     items:[
-      {id:'p14i1', text:`AZ-900: Azure Fundamentals — validates Phase 2`},
-      {id:'p14i2', text:`AZ-204: Azure Developer Associate — the core certification for this whole plan`},
-      {id:'p14i3', text:`AZ-400: DevOps Engineer Expert — optional, if CI/CD becomes your focus`},
-      {id:'p14i4', text:`AZ-305: Solutions Architect Expert — optional stretch, after AZ-204`},
+      {text:`AZ-900: Azure Fundamentals — validates Phase 2`},
+      {text:`AZ-204: Azure Developer Associate — the core certification for this whole plan`},
+      {text:`AZ-400: DevOps Engineer Expert — optional, if CI/CD becomes your focus`},
+      {text:`AZ-305: Solutions Architect Expert — optional stretch, after AZ-204`},
     ]
   },
 ];
 
+const JAVA_PHASES = [
+  {
+    id:'p1', num:'01', tag:null,
+    title:`Environment and Java Fundamentals`,
+    desc:`Get a JDK running and learn where Java differs from C#. You already know how to program — this phase is about the differences.`,
+    items:[
+      {text:`Install a current LTS JDK (21 or newer; 25 is the latest LTS) via SDKMAN or a Temurin installer, and run java, javac and jshell by hand once`},
+      {text:`Set up IntelliJ IDEA (or VS Code with the Java extension pack): run configurations, debugger, refactorings, Maven import`},
+      {text:`The pipeline: .java → javac → .class → JVM → JIT. Packages, the classpath, and the src/main/java layout`},
+      {text:`Classes, interfaces, enums and access modifiers — plus what C# has that Java lacks: properties, partial classes, structs, operator overloading`},
+      {text:`Records, sealed interfaces, and pattern matching for switch — the modern answers to DTO boilerplate and discriminated unions`, deep:true, note:`Learn the modern form first, so you can still recognise the getter/setter/Lombok style in older code.`},
+      {text:`Primitives vs wrapper types, autoboxing, and the == vs equals() trap; String immutability, StringBuilder and text blocks`, deep:true, note:`Integer caching makes == appear to work for small values (-128 to 127) and then fail on larger ones.`},
+      {text:`Checked vs unchecked exceptions, try-with-resources (Java's using), and custom exception hierarchies`, deep:true, note:`Checked exceptions are the biggest culture shock coming from C#. Spring code mostly wraps them in unchecked ones — know why.`},
+      {text:`Practice: a console library app (add, borrow and return books) using classes, interfaces, enums, records and exceptions`},
+    ]
+  },
+  {
+    id:'p2', num:'02', tag:null,
+    title:`Collections, Generics and Streams`,
+    desc:`The standard library you will touch every day. Your LINQ instincts transfer, with a few sharp edges.`,
+    items:[
+      {text:`List, Set, Map, Queue and Deque with their main implementations — ArrayList, HashSet, HashMap, TreeMap, ArrayDeque, PriorityQueue — and when to pick each; immutable List.of and Map.of`},
+      {text:`HashMap internals and the equals()/hashCode() contract`, deep:true, note:`Mutating an object that is used as a key silently loses it in the map. An interview staple and a real-world bug source.`},
+      {text:`Generics: type erasure (versus reified generics in .NET), bounded types, and the ? extends / ? super wildcards`, deep:true, note:`Rule of thumb: Producer Extends, Consumer Super. Erasure is why you cannot write new T() or List<int>.`},
+      {text:`Lambdas, method references, and the core functional interfaces: Predicate, Function, Consumer, Supplier`},
+      {text:`Streams and Collectors: filter, map, flatMap, sorted, reduce, groupingBy, partitioningBy, toMap`, deep:true, note:`Streams are lazy and single-use — unlike an IEnumerable you cannot enumerate one twice, and nothing runs until a terminal operation.`},
+      {text:`Optional: map, flatMap, orElseGet, orElseThrow — and when not to use it (fields, parameters, collections); null handling without nullable reference types`},
+      {text:`Practice: solve 10–15 stream problems without looking anything up — group by, top-N, dedupe, flatten, list to map`},
+    ]
+  },
+  {
+    id:'p3', num:'03', tag:null,
+    title:`JVM, Build Tools and Logging`,
+    desc:`How Java actually runs and how projects are built. Keep it practical — real tuning comes later, once you have a workload.`,
+    items:[
+      {text:`JDK vs JRE vs JVM, bytecode, class loading, and tiered JIT compilation (C1/C2) — compared side by side with the CLR`},
+      {text:`Memory layout: heap (young and old generations), thread stacks, metaspace — and what each OutOfMemoryError message points to`},
+      {text:`Garbage collection basics: what stop-the-world means, and how G1 (the default), ZGC and Shenandoah differ in goals`, note:`Enough to explain the throughput-vs-latency trade-off. Do not tune collectors yet.`},
+      {text:`Maven: pom.xml, the lifecycle (compile, test, package, verify), dependency scopes, the Maven Wrapper (mvnw), and multi-module projects with a parent POM`},
+      {text:`Dependency management: BOMs and dependencyManagement, and mvn dependency:tree to diagnose version conflicts`, note:`Spring Boot's parent POM pins compatible versions for hundreds of libraries — override them sparingly.`},
+      {text:`Logging: the SLF4J API over Logback, log levels, parameterised messages, and MDC for correlation IDs`},
+      {text:`Diagnostics toolbelt: jcmd, jstack thread dumps, heap dumps, and Java Flight Recorder (JFR)`, deep:true, note:`Read a thread dump of a toy app before you have to read one from production.`},
+    ]
+  },
+  {
+    id:'p4', num:'04', tag:'Core focus',
+    title:`Spring Core and Spring Boot`,
+    desc:`Where Java becomes ASP.NET Core-shaped. Map every concept to the one you already know.`,
+    items:[
+      {text:`IoC container and dependency injection: constructor injection over field injection; ApplicationContext as the IServiceProvider equivalent`},
+      {text:`Stereotypes and configuration: @Component, @Service, @Repository, @Configuration, @Bean, and how component scanning finds them`},
+      {text:`Bean scopes and lifecycle: singleton (the default), prototype, request; @PostConstruct and @PreDestroy`, deep:true, note:`The default scope is singleton — the opposite of the ASP.NET Core instinct to reach for scoped. Singleton beans must be thread-safe.`},
+      {text:`Spring Boot: @SpringBootApplication, starters, the embedded server, and auto-configuration`, deep:true, note:`Run with --debug to print the auto-configuration conditions report. It removes most of the magic.`},
+      {text:`Configuration: application.yml, @ConfigurationProperties (the IOptions<T> equivalent), profiles, and environment-variable overrides`},
+      {text:`The request pipeline: servlet Filter → DispatcherServlet → HandlerInterceptor → controller, compared with ASP.NET Core middleware`},
+      {text:`Bean Validation with @Valid, @NotBlank, @Size and @Email — and the javax → jakarta package change that breaks older tutorials`},
+      {text:`AOP and proxies: how @Transactional, @Cacheable and @Async actually work`, deep:true, note:`Calling a @Transactional method from another method in the same class bypasses the proxy, so no transaction starts. One of the most common Spring bugs.`},
+      {text:`In-process events with ApplicationEventPublisher and background work with @Scheduled — the MediatR-notification and IHostedService equivalents`},
+    ]
+  },
+  {
+    id:'p5', num:'05', tag:null,
+    title:`REST APIs and Angular Integration`,
+    desc:`Build the API your Angular app will call. You already know Angular — this phase is about the seam between the two.`,
+    items:[
+      {text:`Spring MVC controllers: @RestController, request mappings, @PathVariable, @RequestParam, @RequestBody, and ResponseEntity with correct status codes; keep controllers thin over a Service → Repository layering`},
+      {text:`Request and response DTOs as records, mapped with MapStruct — never expose JPA entities directly`},
+      {text:`Global error handling with @RestControllerAdvice and RFC 9457 ProblemDetail — one consistent error shape`, deep:true, note:`Angular can build a single HTTP interceptor around one predictable error contract.`},
+      {text:`Publish the contract with springdoc-openapi, and generate a typed TypeScript client for Angular with openapi-generator`, deep:true, note:`Drift between Java DTOs and TypeScript interfaces is the main integration pain. Generate the client and it stops being one.`},
+      {text:`CORS versus an Angular dev proxy (proxy.conf.json), and how the production build is served: Nginx or Spring Boot static resources`},
+      {text:`Pagination, sorting and filtering: Pageable, page/size/sort conventions, and keyset pagination for large tables`},
+      {text:`Safe retries: the Idempotency-Key header on POST, and ETag with If-Match for optimistic concurrency over HTTP`, deep:true, note:`Making a retry harmless is the same idea you will meet again at every distributed-systems layer.`},
+      {text:`Push to the browser: Server-Sent Events and WebSocket/STOMP, consumed from Angular`},
+      {text:`Calling other HTTP services with RestClient and declarative @HttpExchange interfaces (the HttpClient / Refit equivalents)`},
+    ]
+  },
+  {
+    id:'p6', num:'06', tag:'Core focus',
+    title:`Persistence — JPA, Hibernate and Flyway`,
+    desc:`Your EF Core equivalent — and where Java teams get burned most often. Slow down here.`,
+    items:[
+      {text:`The stack: Spring Data JPA → JPA → Hibernate → JDBC (pgjdbc) → PostgreSQL, with HikariCP as the connection pool`},
+      {text:`Entity mapping: @Entity, @Id, ID generation (identity vs sequence, and what it means for batching), @Column, enums, @Embeddable`},
+      {text:`Repositories: derived query methods, @Query with JPQL, projections, and native queries`},
+      {text:`Relationships: @OneToMany, @ManyToOne, @ManyToMany, the owning side, cascade, orphanRemoval — and why LAZY is the right default`, deep:true, note:`In JPA, @ManyToOne and @OneToOne default to EAGER. Switch them to LAZY explicitly.`},
+      {text:`The persistence context: first-level cache, dirty checking, flush timing, and entity states (managed, detached)`, deep:true, note:`Closest to the EF change tracker, but a managed entity is written by dirty checking at flush — you often never call save().`},
+      {text:`N+1 queries: spot them with SQL logging, fix them with JOIN FETCH, @EntityGraph or batch fetching, and assert query counts in tests`, deep:true},
+      {text:`@Transactional: propagation, isolation, read-only, and rollback rules`, deep:true, note:`By default only unchecked exceptions roll a transaction back — a checked exception commits. Put transaction boundaries in the service layer.`},
+      {text:`LazyInitializationException and Open Session in View: why Boot enables OSIV by default and why to turn it off (spring.jpa.open-in-view=false)`, deep:true},
+      {text:`Optimistic locking with @Version and handling OptimisticLockException; pessimistic locks when you need them`},
+      {text:`Schema migrations with Flyway (or Liquibase), versus EF Core migrations`, deep:true, note:`Flyway is SQL-first: you hand-write versioned migrations and the database is the source of truth. Never use hibernate.ddl-auto=update outside a scratch database.`},
+      {text:`Escape hatches: JdbcClient/JdbcTemplate, Spring Data JDBC and jOOQ — for reporting queries and bulk work where JPA is the wrong tool (the Dapper role)`},
+    ]
+  },
+  {
+    id:'p7', num:'07', tag:null,
+    title:`PostgreSQL Beyond CRUD`,
+    desc:`You already know Postgres. This phase covers the internals that scaling and correctness depend on.`,
+    items:[
+      {text:`Index types and design: B-tree, GIN, GiST and BRIN, partial and covering (INCLUDE) indexes, multicolumn ordering`},
+      {text:`EXPLAIN (ANALYZE, BUFFERS): read plans, spot sequential scans and bad row estimates, and find your worst queries with pg_stat_statements`, deep:true},
+      {text:`MVCC, vacuum and bloat — and why long-running transactions hurt everything`, deep:true, note:`A forgotten open transaction can stop vacuum from reclaiming dead rows across the whole database.`},
+      {text:`Isolation levels (read committed, repeatable read, serializable), lock modes, deadlocks, and SELECT … FOR UPDATE [SKIP LOCKED] — Postgres as a lightweight queue`},
+      {text:`JSONB with GIN indexes, arrays, and built-in full-text search — before reaching for a separate search engine`},
+      {text:`Declarative table partitioning (range, list, hash) for event and time-series tables, and retention by dropping partitions`},
+      {text:`Connection management: max_connections, HikariCP pool sizing, PgBouncer and its transaction-pooling caveats`, deep:true, note:`More connections usually makes Postgres slower, not faster. Size pools from cores and workload, not from thread counts.`},
+      {text:`Replication: streaming replicas, replication lag, and logical replication (the basis for change data capture)`},
+      {text:`Backups and point-in-time recovery: pg_dump vs base backups with WAL archiving — then actually rehearse a restore`},
+    ]
+  },
+  {
+    id:'p8', num:'08', tag:'Core focus',
+    title:`Spring Security, OAuth2 and JWT`,
+    desc:`The most important Spring topic after the core framework. Learn the model first, then the token flows.`,
+    items:[
+      {text:`Authentication vs authorization, and the SecurityFilterChain with the lambda DSL — compared with ASP.NET Core auth middleware`},
+      {text:`Users and passwords: UserDetailsService, PasswordEncoder, and BCrypt/Argon2 through DelegatingPasswordEncoder`},
+      {text:`JWT end to end: issue, sign and validate; short-lived access tokens plus refresh tokens`, deep:true, note:`Build it by hand once as a learning exercise, then switch to Spring's OAuth2 resource server — production systems validate tokens from an identity provider, not from a hand-rolled filter.`},
+      {text:`Roles vs authorities, method security with @PreAuthorize, ownership checks, and tests with @WithMockUser and the jwt() MockMvc post-processor asserting 401 vs 403`, deep:true, note:`Broken object-level authorization — user A reading user B's record — is the top API vulnerability. Write a test for it.`},
+      {text:`OAuth 2.0 and OpenID Connect: Authorization Code with PKCE, and Client Credentials`, deep:true},
+      {text:`Run Keycloak locally in Docker as your identity provider — realms, clients, roles, and mapping token claims to Spring authorities`},
+      {text:`Angular sign-in: PKCE in the browser (angular-oauth2-oidc or keycloak-js) versus a backend-for-frontend that keeps tokens out of the browser`, deep:true, note:`A BFF trades a little infrastructure for never exposing tokens to JavaScript. Know both and be able to argue the choice.`},
+      {text:`CSRF vs CORS: when CSRF protection can be disabled (stateless bearer tokens) and when it must stay on (cookie sessions)`},
+      {text:`Secrets and supply chain: nothing sensitive in application.yml, environment variables or a secrets manager, and dependency scanning (Dependabot, OWASP Dependency-Check)`},
+    ]
+  },
+  {
+    id:'p9', num:'09', tag:null,
+    title:`Testing`,
+    desc:`Testing in Java has more moving parts than xUnit alone. Learn which kind of test buys what.`,
+    items:[
+      {text:`JUnit 5 with AssertJ: parameterized tests, nested tests, lifecycle — the xUnit equivalents`},
+      {text:`Mockito: @Mock, @InjectMocks, when/verify, argument captors — and why not to mock types you do not own`},
+      {text:`Slice tests: @WebMvcTest with MockMvc, @DataJpaTest, @JsonTest`},
+      {text:`Testcontainers with real PostgreSQL, Kafka and Redis, wired with @ServiceConnection`, deep:true, note:`Do not test JPA against H2 — its SQL and locking behaviour differ from Postgres. Test against the real database in a container.`},
+      {text:`@SpringBootTest for a small number of full-context integration tests, and keeping the suite fast with context caching`},
+      {text:`Asynchronous assertions with Awaitility, and testing Kafka consumers end to end`},
+      {text:`Contract tests with Pact or Spring Cloud Contract — keeps Angular and other services honest`},
+      {text:`ArchUnit rules for layering, JaCoCo coverage as a signal (not a target), and optional mutation testing with PIT`},
+    ]
+  },
+  {
+    id:'p10', num:'10', tag:'Core focus',
+    title:`Java Concurrency`,
+    desc:`async/await has no direct Java equivalent, so the threading model underneath matters far more here than it did in C#.`,
+    items:[
+      {text:`Threads, Runnable and Callable, ExecutorService, and sizing thread pools for CPU-bound vs I/O-bound work`},
+      {text:`The Java Memory Model: visibility, reordering and happens-before — why volatile exists`, deep:true},
+      {text:`synchronized, ReentrantLock, ReadWriteLock, and atomics (AtomicInteger, LongAdder) — compared with lock and Interlocked`},
+      {text:`java.util.concurrent: ConcurrentHashMap, BlockingQueue, CountDownLatch, Semaphore, CopyOnWriteArrayList`},
+      {text:`CompletableFuture: thenApply, thenCompose, thenCombine, allOf, and exception handling — versus Task and async/await`, note:`Composition is explicit rather than syntactic. Pass your own executor for blocking work instead of sharing the common pool.`},
+      {text:`Virtual threads (Java 21): thread-per-request at scale, when they help (blocking I/O), and pitfalls such as pinning and ThreadLocal`, deep:true, note:`In Spring Boot, spring.threads.virtual.enabled=true moves request handling onto virtual threads. Never pool them — create one per task.`},
+      {text:`Structured concurrency and scoped values — know what they are, and check their current status on your JDK`},
+      {text:`Failure modes on purpose: race condition, deadlock, starvation, thread-pool exhaustion — reproduce each, then diagnose with jstack`, deep:true},
+      {text:`Spring's @Async and TaskExecutor, including propagating security context and MDC across threads`},
+      {text:`Reactive programming (Project Reactor, WebFlux): know what problem it solves and why virtual threads reduced the need for it`},
+    ]
+  },
+  {
+    id:'p11', num:'11', tag:null,
+    title:`Caching and Redis`,
+    desc:`The cheapest scaling lever — and a rich source of subtle bugs.`,
+    items:[
+      {text:`Redis data types (strings, hashes, sets, sorted sets, streams), TTL, and eviction policies`},
+      {text:`Spring Cache (@Cacheable, @CacheEvict) with Caffeine in-process and Redis shared; Lettuce and RedisTemplate; two-level caching and its coherence problems`},
+      {text:`Cache patterns: cache-aside, read-through, write-through, write-behind — and the failure modes of each`, deep:true},
+      {text:`Invalidation and TTL strategy; cache stampede (request coalescing, jittered TTLs) and cache penetration (negative caching)`, deep:true},
+      {text:`Redis for rate limiting (Bucket4j), counters and leaderboards; distributed locks carry caveats — see Phase 12`},
+      {text:`HTTP-level caching: Cache-Control, ETag, and a CDN in front of the API and the Angular assets`},
+      {text:`Redis persistence and high availability: RDB vs AOF, replication, Sentinel vs Cluster — and treating the cache as rebuildable`},
+    ]
+  },
+  {
+    id:'p12', num:'12', tag:'Core focus',
+    title:`Distributed Systems Fundamentals`,
+    desc:`The theory under everything after this. It is what separates using Kafka from understanding it.`,
+    items:[
+      {text:`Fallacies of distributed computing, partial failure, and the latency numbers every engineer should know`},
+      {text:`Delivery semantics: at-most-once, at-least-once, and "exactly-once" — in practice, at-least-once plus idempotency`, deep:true, note:`No system gives true exactly-once delivery across a network. What you build is an exactly-once effect.`},
+      {text:`Idempotency in practice: idempotency keys, dedup tables, and naturally idempotent operations`, deep:true},
+      {text:`CAP and PACELC — what they actually say, and what they do not`, note:`CAP describes behaviour during a partition only. PACELC adds the everyday latency-vs-consistency trade-off when there is no partition.`},
+      {text:`Consistency models: linearizable, causal, read-your-writes, eventual — mapped onto Postgres primary vs replica, Redis, and Kafka`},
+      {text:`Time and ordering: unreliable clocks, Lamport and vector clocks, and why last-write-wins loses data`},
+      {text:`Replication strategies: single-leader, multi-leader, and leaderless quorums (R + W > N)`},
+      {text:`Partitioning: range vs hash, consistent hashing, hot keys and skew, rebalancing`},
+      {text:`Consensus and leader election: Raft, quorums, and what etcd, ZooKeeper and Kafka's KRaft use them for`, deep:true, note:`You will probably never implement Raft, but you should know what a quorum guarantees and what a minority partition can and cannot do.`},
+      {text:`Distributed transactions: why two-phase commit is avoided, and how sagas and the outbox replace it (Phase 15)`},
+      {text:`Distributed locks and fencing tokens: why a lock with a TTL is not safe on its own`, deep:true},
+    ]
+  },
+  {
+    id:'p13', num:'13', tag:'Core focus',
+    title:`Scaling Systems`,
+    desc:`Getting from one instance to many, in the order it is usually worth doing it.`,
+    items:[
+      {text:`Stateless service design: no in-memory sessions or local files — externalise state (Twelve-Factor)`},
+      {text:`Load balancing: L4 vs L7, algorithms, health checks, NGINX/HAProxy/Envoy — and why to avoid sticky sessions`},
+      {text:`Back-of-envelope estimation (QPS, storage, bandwidth) and percentiles (p50/p95/p99) — and why averages mislead`, deep:true},
+      {text:`The database scaling ladder: query and index tuning → pooling → caching → read replicas → partitioning → sharding (shard-key choice, cross-shard queries; know Citus)`, deep:true, note:`Do them in order. Most systems never need to leave the first four rungs, and sharding is the hardest to undo.`},
+      {text:`Read replicas from Spring: routing read-only transactions with AbstractRoutingDataSource and handling replication lag`, deep:true},
+      {text:`Queue-based load leveling and backpressure: bounded queues, consumer lag, load shedding`, deep:true},
+      {text:`Rate limiting and throttling: token bucket, leaky bucket, sliding window — and where to enforce it`},
+      {text:`Autoscaling: Kubernetes HPA on CPU or custom metrics, KEDA on consumer lag, and JVM warm-up (JIT) cold-start effects`},
+      {text:`Multi-region basics: active-passive vs active-active, RPO and RTO, global traffic routing`},
+      {text:`Load test with k6 or Gatling, find the first bottleneck, profile it with JFR or async-profiler flame graphs, fix it, repeat`, deep:true, note:`The first bottleneck is rarely where you predicted — usually a connection pool, a lock, or GC.`},
+    ]
+  },
+  {
+    id:'p14', num:'14', tag:'Core focus',
+    title:`Messaging — Kafka and RabbitMQ`,
+    desc:`Moving from synchronous calls to asynchronous messaging. Kafka first, RabbitMQ for contrast.`,
+    items:[
+      {text:`Messaging vocabulary: queue vs pub/sub vs log; commands vs events; when async beats a synchronous call`},
+      {text:`Kafka architecture: brokers, topics, partitions, replication (ISR, min.insync.replicas), KRaft — run a local cluster in Docker`},
+      {text:`Producers: acks, retries, the idempotent producer, batching, and choosing a partition key`, deep:true, note:`Ordering exists only within a partition. Key by the entity whose events must stay ordered — for example orderId.`},
+      {text:`Consumers and consumer groups: offsets, commit strategies, rebalancing, lag — and why concurrency is capped by partition count`, deep:true},
+      {text:`Spring for Apache Kafka: @KafkaListener, KafkaTemplate, listener concurrency, and error handlers with backoff`},
+      {text:`Retries, retry topics, dead-letter topics, and poison messages`, deep:true},
+      {text:`Delivery guarantees: at-least-once with idempotent consumers, Kafka transactions, and where exactly-once semantics stop`, deep:true, note:`EOS covers read-process-write inside Kafka. It does not extend to your database or an HTTP call.`},
+      {text:`Serialization and schema evolution: Avro or Protobuf with a Schema Registry; backward vs forward compatibility`, deep:true, note:`Schema changes are one of the most common ways event-driven systems break. Choose a compatibility mode before the first consumer ships.`},
+      {text:`Retention and log compaction — topics as a replayable log, and compaction as latest-value-per-key`},
+      {text:`Stream processing overview: Kafka Streams and Flink — windows, state, joins; know when you need them`},
+      {text:`RabbitMQ: exchanges (direct, topic, fanout), queues, acks, prefetch — a smart broker vs a dumb log, and when to prefer it (task queues, routing)`},
+    ]
+  },
+  {
+    id:'p15', num:'15', tag:'Core focus',
+    title:`Event-Driven Patterns`,
+    desc:`The patterns that make an event-driven system correct, not just asynchronous.`,
+    items:[
+      {text:`Event kinds: notification, event-carried state transfer, domain events, commands — and treating event schemas as a public API`},
+      {text:`Transactional outbox: write the business row and an outbox row in one transaction, then relay to Kafka`, deep:true, note:`Solves the dual-write problem: you cannot atomically write to Postgres and Kafka. Without an outbox you will eventually lose or duplicate an event.`},
+      {text:`Change data capture with Debezium (Postgres logical decoding → Kafka Connect) versus a polling publisher`, deep:true},
+      {text:`Idempotent consumers and the inbox pattern: a dedup table written in the same transaction as the side effect`, deep:true},
+      {text:`Sagas: choreography vs orchestration, compensating actions, timeouts, and state machines — know Temporal and Camunda before hand-rolling an engine`, deep:true},
+      {text:`CQRS: separate write and read models, projections, and materialised views for queries that span services`},
+      {text:`Event sourcing: events as the source of truth, snapshots, replay — and the real costs`, deep:true, note:`Most systems need events, not event sourcing. Reach for it in audit-critical domains such as ledgers.`},
+      {text:`Ordering, duplicates and late events: version numbers, per-aggregate partitioning, and reordering buffers`},
+      {text:`Eventual consistency in the API and UI: 202 Accepted plus a status resource, and pushing completion to Angular over SSE or WebSocket`},
+      {text:`Design tooling: event storming to find events and boundaries, and AsyncAPI to document them`},
+    ]
+  },
+  {
+    id:'p16', num:'16', tag:null,
+    title:`Microservices and Architecture`,
+    desc:`Only after the monolith is solid. Splitting services is a cost you pay for a specific benefit.`,
+    items:[
+      {text:`Modular monolith first: enforce module boundaries with Spring Modulith or ArchUnit, and extract a service only when a boundary proves itself`, deep:true},
+      {text:`Domain-driven design essentials: bounded contexts, aggregates, ubiquitous language — and how aggregates map to transactions and partition keys`, deep:true},
+      {text:`Hexagonal / clean architecture: ports and adapters, and the trade-off of keeping the domain free of Spring and JPA annotations`},
+      {text:`Service boundaries and data ownership: database per service, no shared tables, and choosing sync vs async between services`},
+      {text:`REST vs gRPC vs messaging between services; gRPC with Protobuf in Java`},
+      {text:`API gateway and backend-for-frontend with Spring Cloud Gateway: routing, edge auth, rate limits, aggregation for Angular`},
+      {text:`Service discovery and configuration: Kubernetes DNS, ConfigMaps and Secrets versus Eureka and Spring Cloud Config`, note:`Much of the older Spring Cloud Netflix stack is superseded by Kubernetes primitives — know it to read old code, not to start new work.`},
+      {text:`Evolving safely: strangler-fig migration, anti-corruption layers, and expand/contract database migrations`},
+      {text:`Write architecture decision records (ADRs) — one per significant choice`},
+    ]
+  },
+  {
+    id:'p17', num:'17', tag:null,
+    title:`Resilience and Fault Tolerance`,
+    desc:`Assume every dependency will be slow or down, and design for it.`,
+    items:[
+      {text:`Timeouts on everything — RestClient, JDBC, Kafka, Redis; nothing should default to waiting forever`, deep:true, note:`Missing timeouts, not slow services, are what turn a partial outage into a cascading one.`},
+      {text:`Retries with exponential backoff and jitter; retry only idempotent operations; retry budgets and retry storms`, deep:true},
+      {text:`Resilience4j (the Polly equivalent): circuit breaker, bulkhead, rate limiter, time limiter — with Spring Boot integration`, deep:true},
+      {text:`Fallbacks and graceful degradation: serve stale cache, return defaults, switch features off; shed load at the edge with 429 and 503 plus Retry-After`},
+      {text:`Liveness, readiness and startup probes, and graceful shutdown (server.shutdown=graceful) that drains requests and consumers`},
+      {text:`Chaos experiments: kill a pod, a broker, a replica — with Toxiproxy or Chaos Mesh — and observe what really happens`},
+      {text:`SLIs, SLOs and error budgets: define one real SLO for your capstone`},
+      {text:`Disaster recovery: RPO and RTO, restore drills, and a runbook for each failure you rehearsed`},
+    ]
+  },
+  {
+    id:'p18', num:'18', tag:null,
+    title:`Docker, Kubernetes and Delivery`,
+    desc:`Java-specific container concerns, then running and shipping it. Cloud-neutral — the Azure tab covers one cloud in depth.`,
+    items:[
+      {text:`Container images for Spring Boot: multi-stage Dockerfile or Buildpacks/Jib, layered jars, non-root user, slim JRE base image`},
+      {text:`The JVM in containers: MaxRAMPercentage, CPU limits, and how small limits change GC and thread-pool sizing`, deep:true, note:`With under 2 CPUs or roughly 1.8 GB of memory the JVM can fall back to the serial collector. Set limits deliberately and check which GC you actually got.`},
+      {text:`Docker Compose for the full local stack — Angular, API, Postgres, Redis, Kafka, Keycloak — with one command`},
+      {text:`Startup and footprint: AppCDS, CRaC and GraalVM native image — know the trade-offs`},
+      {text:`Kubernetes core objects: Pod, Deployment, Service, Ingress, ConfigMap, Secret — run locally with kind or minikube`},
+      {text:`Probes, resource requests and limits, HPA, PodDisruptionBudget, and rolling updates`},
+      {text:`Helm or Kustomize for per-environment configuration, and GitOps with Argo CD or Flux as the delivery model`},
+      {text:`CI pipeline (GitHub Actions or GitLab CI): mvn verify, Testcontainers in CI, dependency caching, image build and push, image scanning with Trivy`, deep:true},
+      {text:`Release strategies: rolling, blue/green, canary, feature flags — and database changes that stay compatible across versions`},
+      {text:`Optional: deploy one service to a cloud of your choice — managed Postgres, a container runtime, object storage, a secrets manager`},
+    ]
+  },
+  {
+    id:'p19', num:'19', tag:null,
+    title:`Observability`,
+    desc:`How you will know something is wrong before a user tells you — across services and queues.`,
+    items:[
+      {text:`Metrics, logs and traces — and what to alert on: the RED method (rate, errors, duration) for services, USE for resources`},
+      {text:`Micrometer metrics through Actuator, scraped by Prometheus and shown in Grafana — including JVM, GC and HikariCP pool metrics`},
+      {text:`Structured JSON logs carrying trace and correlation IDs via MDC, centralised with Loki or ELK/OpenSearch`},
+      {text:`OpenTelemetry: the Java agent for auto-instrumentation, manual spans, and OTLP export to Tempo or Jaeger`, deep:true},
+      {text:`Tracing across HTTP and Kafka: context propagation through message headers, and span links for asynchronous work`, deep:true},
+      {text:`Alerting on symptoms (error rate, latency, consumer lag) rather than causes — with a runbook per alert`},
+      {text:`Frontend observability: propagate the traceparent header from Angular, and capture errors and web vitals`},
+    ]
+  },
+  {
+    id:'p20', num:'20', tag:'Core focus',
+    title:`System Design Practice`,
+    desc:`Apply everything above under interview-style constraints. Write each design down — do not just think it through.`,
+    items:[
+      {text:`Use one framework every time: requirements → estimates → API → data model → high-level design → deep dive → bottlenecks and trade-offs`},
+      {text:`Design a URL shortener: ID generation, caching, hot keys`},
+      {text:`Design a rate limiter: algorithms and distributed counters`},
+      {text:`Design a notification system: fan-out, retries, user preferences, deduplication`},
+      {text:`Design a chat / real-time messaging service: WebSocket fan-out, presence, ordering, offline delivery`},
+      {text:`Design a payment or ledger service: idempotency, double-entry, exactly-once effect, reconciliation`, deep:true},
+      {text:`Design an event-ingestion and analytics pipeline: Kafka, partitioning, batch vs stream, an OLAP store`, deep:true},
+      {text:`Pick two more: a news feed (fan-out on write vs read) and a ride-sharing or food-delivery backend (geo indexing, matching, order state machines)`},
+      {text:`Write each design as a 1–2 page doc with a diagram and an explicit trade-offs section, then explain it aloud`},
+      {text:`Read three public postmortems and study what failed and why`},
+    ]
+  },
+  {
+    id:'p21', num:'21', tag:'Core focus',
+    title:`Capstone — Event-Driven Analytics Platform`,
+    desc:`Everything above, wired together as one real system. This is where the pieces stop being separate topics.`,
+    items:[
+      {text:`Angular dashboard — KPI cards, charts, filters, date range — using a typed client generated from OpenAPI`},
+      {text:`API gateway and auth: Keycloak, roles (ADMIN, ANALYST, USER), method security, and a test for object-level authorization`},
+      {text:`Ingestion service: validates events, deduplicates by event ID, and publishes to Kafka with a deliberately chosen partition key`},
+      {text:`Analytics service: consumes events into time-partitioned PostgreSQL tables, with Flyway migrations and keyset-paginated queries`},
+      {text:`Reliability: transactional outbox with Debezium, inbox deduplication on consumers, and a dead-letter topic for poison messages`},
+      {text:`Long-running reports: request → Kafka → worker → stored result → notification, with a status endpoint and SSE push to Angular`},
+      {text:`Redis caching for dashboard queries with explicit invalidation, plus rate limiting at the gateway`},
+      {text:`Resilience4j timeouts, retries and circuit breakers on service calls; graceful shutdown for the API and the consumers`},
+      {text:`Tests: unit, slice, Testcontainers integration (Postgres + Kafka), and contract tests`},
+      {text:`Observability: Prometheus and Grafana dashboards, OpenTelemetry traces across HTTP and Kafka, and an alert on consumer lag`},
+      {text:`Run it all with Docker Compose, then on local Kubernetes (kind) with an HPA, built and tested by a CI pipeline`},
+      {text:`Prove it under stress: load test with k6 and fix the first bottleneck, then run a chaos drill — kill a consumer mid-batch, restart the broker — and show that no events were lost or duplicated`, deep:true},
+      {text:`Write the README with an architecture diagram, your ADRs, and the trade-offs you made`},
+    ]
+  },
+  {
+    id:'p22', num:'22', tag:null,
+    title:`Reading and Certification Path`,
+    desc:`Optional, but worth structuring. Books first — they carry most of the depth in this plan.`,
+    items:[
+      {text:`Effective Java (Joshua Bloch) — after Phase 2, and again after Phase 6`},
+      {text:`Java Concurrency in Practice (Brian Goetz) — alongside Phase 10`},
+      {text:`Designing Data-Intensive Applications (Martin Kleppmann) — alongside Phases 12–15`, deep:true, note:`Read the replication, partitioning, transactions, distributed-trouble, and consistency/consensus chapters closely. They map directly onto Phases 12–15.`},
+      {text:`Kafka: The Definitive Guide — alongside Phase 14`},
+      {text:`Building Microservices (Sam Newman) and Domain-Driven Design Distilled (Vaughn Vernon) — alongside Phase 16`},
+      {text:`Release It! (Michael Nygard) — alongside Phase 17`},
+      {text:`Optional: Oracle Certified Professional, Java SE Developer — validates Phases 1–3`},
+      {text:`Optional: Spring Professional certification (check current availability) — validates Phases 4–8`},
+      {text:`Optional: Confluent Certified Developer for Apache Kafka (Phase 14) or CKAD (Phase 18) — pick the one that matches where you specialise`},
+    ]
+  },
+];
+
+const DOTNET_TO_JAVA = [
+  ['ASP.NET Core', 'Spring Boot + Spring MVC'],
+  ['Middleware', 'Servlet Filter / HandlerInterceptor'],
+  ['IServiceProvider, AddScoped', 'ApplicationContext, bean scopes (default: singleton)'],
+  ['appsettings.json, IOptions<T>', 'application.yml, @ConfigurationProperties'],
+  ['DataAnnotations, FluentValidation', 'Bean Validation (Jakarta)'],
+  ['EF Core, DbContext', 'Spring Data JPA + Hibernate, persistence context'],
+  ['EF Core migrations', 'Flyway / Liquibase'],
+  ['Dapper', 'JdbcClient / jOOQ'],
+  ['Npgsql', 'pgjdbc + HikariCP'],
+  ['LINQ', 'Streams API'],
+  ['Task, async/await', 'CompletableFuture, virtual threads'],
+  ['Polly', 'Resilience4j'],
+  ['MediatR notifications', 'ApplicationEventPublisher'],
+  ['IHostedService, BackgroundService', '@Scheduled, message listeners'],
+  ['AutoMapper', 'MapStruct'],
+  ['Swashbuckle', 'springdoc-openapi'],
+  ['ILogger, Serilog', 'SLF4J + Logback'],
+  ['ASP.NET Identity, JWT bearer', 'Spring Security + OAuth2 resource server'],
+  ['xUnit, Moq, WebApplicationFactory', 'JUnit 5, Mockito, @SpringBootTest'],
+  ['NuGet, MSBuild', 'Maven (or Gradle)'],
+  ['MassTransit', 'Spring for Apache Kafka / Spring Cloud Stream'],
+  ['Hangfire', 'JobRunr / Quartz'],
+  ['Application Insights', 'Micrometer + OpenTelemetry'],
+  ['HttpClient', 'RestClient / WebClient'],
+];
+
+const PATHS = [
+  {
+    id:'azure',
+    label:'Azure',
+    sublabel:'Cloud platform for your .NET stack',
+    kicker:'Azure learning path',
+    title:'Azure Study Path',
+    subtitle:'Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>az login</code> to a certified, production-shaped deployment.',
+    phases:AZURE_PHASES,
+  },
+  {
+    id:'java',
+    label:'Java',
+    sublabel:'Backend, distributed systems, scale',
+    kicker:'Java learning path',
+    title:'Java Full-Stack Study Path',
+    subtitle:'Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>javac</code> to distributed, event-driven systems that scale.',
+    map:{heads:['.NET', 'Java'], title:'Your .NET → Java map', hint:'what each tool you know becomes', rows:DOTNET_TO_JAVA},
+    phases:JAVA_PHASES,
+  },
+];
+
+PATHS.forEach(function(path){
+  path.phases.forEach(function(p){
+    p.items.forEach(function(it, i){ it.id = p.id + 'i' + (i + 1); });
+  });
+});
+
+const STORE_PREFIX = 'study-path:';
+const TAB_KEY = STORE_PREFIX + 'active';
+const states = {};
+let storageOk = true;
+
+function storeGet(key){
+  try { return localStorage.getItem(key); }
+  catch (e) { storageOk = false; return null; }
+}
+function storeSet(key, value){
+  if (!storageOk) return;
+  try { localStorage.setItem(key, value); }
+  catch (e) { storageOk = false; }
+}
+function loadStates(){
+  PATHS.forEach(function(path){
+    const set = new Set();
+    const raw = storeGet(STORE_PREFIX + path.id);
+    if (raw){
+      try {
+        const ids = JSON.parse(raw);
+        if (Array.isArray(ids)) ids.forEach(function(id){ set.add(id); });
+      } catch (e) {}
+    }
+    states[path.id] = set;
+  });
+}
+function saveState(pathId){
+  storeSet(STORE_PREFIX + pathId, JSON.stringify(Array.from(states[pathId])));
+}
+
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-function countPhase(phase, state){
-  const total = phase.items.length;
-  const done = phase.items.filter(function(i){ return state.has(i.id); }).length;
-  return {done:done, total:total};
+function pctOf(done, total){ return total ? Math.round((done / total) * 100) : 0; }
+function countPhase(pathId, phase){
+  const set = states[pathId];
+  const done = phase.items.filter(function(i){ return set.has(i.id); }).length;
+  return {done:done, total:phase.items.length};
 }
-function countAll(state){
+function countPath(path){
   let done = 0, total = 0;
-  PHASES.forEach(function(p){
-    total += p.items.length;
-    done += p.items.filter(function(i){ return state.has(i.id); }).length;
+  path.phases.forEach(function(p){
+    const c = countPhase(path.id, p);
+    done += c.done;
+    total += c.total;
   });
   return {done:done, total:total};
 }
-function saveStatusLabel(){
-  switch(saveStatus){
-    case 'saving': return 'Saving…';
-    case 'unsaved': return 'Unsaved changes';
-    case 'local': return 'Progress not saved in this view';
-    case 'error': return 'Couldn’t save — will retry on next change';
-    default: return 'Progress saved';
-  }
-}
-function saveStatusClass(){ return 'status-' + saveStatus; }
 
-function renderItem(item, state){
-  const checked = state.has(item.id);
-  return '<label class="item' + (checked ? ' done' : '') + '" data-id="' + item.id + '">' +
-    '<input type="checkbox" class="chk" id="' + item.id + '" data-id="' + item.id + '"' + (checked ? ' checked' : '') + '>' +
+function renderTabs(){
+  return '<div class="site-head">' +
+    '<p class="site-kicker">Study paths</p>' +
+    '<div class="tabs" role="tablist" aria-label="Study paths">' +
+      PATHS.map(function(path, i){
+        return '<button class="tab" role="tab" type="button" id="tab-' + path.id + '"' +
+          ' aria-controls="panel-' + path.id + '" aria-selected="' + (i === 0) + '"' +
+          ' tabindex="' + (i === 0 ? '0' : '-1') + '" data-tab="' + path.id + '" data-path="' + path.id + '">' +
+          '<span class="tab-label">' + esc(path.label) + '</span>' +
+          '<span class="tab-sub">' + esc(path.sublabel) + '</span>' +
+          '<span class="tab-meta">' +
+            '<span class="bar"><span class="bar-fill" data-tabfill="' + path.id + '"></span></span>' +
+            '<span class="tab-count" data-tabcount="' + path.id + '"></span>' +
+          '</span>' +
+        '</button>';
+      }).join('') +
+    '</div>' +
+  '</div>';
+}
+function renderItem(pathId, item){
+  const checked = states[pathId].has(item.id);
+  return '<label class="item' + (checked ? ' done' : '') + '">' +
+    '<input type="checkbox" class="chk" data-path-id="' + pathId + '" data-id="' + item.id + '"' + (checked ? ' checked' : '') + '>' +
     '<span class="item-body">' +
       '<span class="item-text">' + esc(item.text) + (item.deep ? ' <span class="pill gold">Deep dive</span>' : '') + '</span>' +
       (item.note ? '<span class="item-note">' + esc(item.note) + '</span>' : '') +
     '</span>' +
   '</label>';
 }
-function renderPhase(phase, state){
-  const c = countPhase(phase, state);
-  const pct = c.total ? Math.round((c.done / c.total) * 100) : 0;
-  return '<section class="phase" id="' + phase.id + '">' +
-    '<div class="phase-head">' +
-      '<div class="eyebrow-row">' +
-        '<span class="eyebrow">Phase ' + phase.num + '</span>' +
-        (phase.tag ? '<span class="pill gold">' + esc(phase.tag) + '</span>' : '') +
-      '</div>' +
-      '<h2 class="phase-title">' + esc(phase.title) + '</h2>' +
-      '<p class="phase-desc">' + esc(phase.desc) + '</p>' +
-      '<div class="progress-row">' +
-        '<div class="bar"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
-        '<span class="progress-count">' + c.done + ' / ' + c.total + '</span>' +
-      '</div>' +
+function renderPhase(pathId, phase){
+  const key = pathId + '-' + phase.id;
+  return '<section class="phase" id="' + key + '">' +
+    '<div class="eyebrow-row">' +
+      '<span class="eyebrow">Phase ' + phase.num + '</span>' +
+      (phase.tag ? '<span class="pill gold">' + esc(phase.tag) + '</span>' : '') +
     '</div>' +
-    '<div class="items">' + phase.items.map(function(i){ return renderItem(i, state); }).join('') + '</div>' +
+    '<h2 class="phase-title">' + esc(phase.title) + '</h2>' +
+    '<p class="phase-desc">' + esc(phase.desc) + '</p>' +
+    '<div class="progress-row">' +
+      '<div class="bar"><div class="bar-fill" data-fill="' + key + '"></div></div>' +
+      '<span class="progress-count" data-count="' + key + '"></span>' +
+    '</div>' +
+    '<div class="items">' + phase.items.map(function(i){ return renderItem(pathId, i); }).join('') + '</div>' +
   '</section>';
 }
-function renderNav(state){
+function renderNav(path){
   return '<nav class="navchips" aria-label="Jump to phase">' +
-    PHASES.map(function(p){
-      const c = countPhase(p, state);
-      const complete = c.total > 0 && c.done === c.total;
-      return '<a href="#' + p.id + '" class="chip' + (complete ? ' complete' : '') + (p.tag ? ' core' : '') + '">' +
+    path.phases.map(function(p){
+      const key = path.id + '-' + p.id;
+      return '<a href="#' + key + '" class="chip' + (p.tag ? ' core' : '') + '" data-chip="' + key + '">' +
         '<span class="chip-num">' + p.num + '</span>' +
         '<span class="chip-title">' + esc(p.title) + '</span>' +
-        '<span class="chip-count">' + c.done + '/' + c.total + '</span>' +
+        '<span class="chip-count"></span>' +
       '</a>';
     }).join('') +
   '</nav>';
 }
-function renderHeader(state){
-  const c = countAll(state);
-  const pct = c.total ? Math.round((c.done / c.total) * 100) : 0;
-  return '<header>' +
-    '<p class="kicker">Azure learning path</p>' +
-    '<h1>Azure Study Path</h1>' +
-    '<p class="subtitle">Built for a C#/.NET, PostgreSQL, and Angular developer — from your first <code>az login</code> to a certified, production-shaped deployment.</p>' +
-    '<div class="overall">' +
-      '<div class="bar big"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
-      '<div class="overall-meta">' +
-        '<span>' + c.done + ' / ' + c.total + ' complete · ' + pct + '%</span>' +
-        '<span class="save-status ' + saveStatusClass() + '">' + saveStatusLabel() + '</span>' +
-      '</div>' +
+function renderMap(path){
+  if (!path.map) return '';
+  return '<details class="map">' +
+    '<summary><span>' + esc(path.map.title) + '</span><span class="map-hint">' + esc(path.map.hint) + '</span></summary>' +
+    '<div class="map-grid">' +
+      '<div class="head">' + esc(path.map.heads[0]) + '</div><div class="head">' + esc(path.map.heads[1]) + '</div>' +
+      path.map.rows.map(function(r){
+        return '<div>' + esc(r[0]) + '</div><div class="to">' + esc(r[1]) + '</div>';
+      }).join('') +
     '</div>' +
-    '<div class="legend">' +
-      '<span class="legend-item"><span class="pill gold">Core focus</span> phases to slow down on for this stack</span>' +
-      '<span class="legend-item"><span class="pill gold">Deep dive</span> topics worth studying beyond the surface</span>' +
-    '</div>' +
-  '</header>';
+  '</details>';
 }
-function renderBody(state){
-  return '<div class="wrap">' +
-    renderHeader(state) +
-    renderNav(state) +
-    '<main class="phases">' + PHASES.map(function(p){ return renderPhase(p, state); }).join('') + '</main>' +
-    '<footer class="page-footer">Check off items as you go — progress is saved automatically.</footer>' +
+function renderPanel(path, i){
+  return '<div class="panel" role="tabpanel" id="panel-' + path.id + '" aria-labelledby="tab-' + path.id + '"' +
+    ' data-panel="' + path.id + '" data-path="' + path.id + '"' + (i === 0 ? '' : ' hidden') + '>' +
+    '<header>' +
+      '<p class="kicker">' + esc(path.kicker) + '</p>' +
+      '<h1>' + esc(path.title) + '</h1>' +
+      '<p class="subtitle">' + path.subtitle + '</p>' +
+      '<div class="overall">' +
+        '<div class="bar big"><div class="bar-fill" data-overallfill="' + path.id + '"></div></div>' +
+        '<div class="overall-meta">' +
+          '<span data-overalltext="' + path.id + '"></span>' +
+          '<span class="save-status' + (storageOk ? '' : ' status-local') + '">' +
+            (storageOk ? 'Progress saved in this browser' : 'Progress can’t be saved in this view') +
+          '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="legend">' +
+        '<span class="legend-item"><span class="pill gold">Core focus</span> phases to slow down on for this stack</span>' +
+        '<span class="legend-item"><span class="pill gold">Deep dive</span> topics worth studying beyond the surface</span>' +
+      '</div>' +
+    '</header>' +
+    renderMap(path) +
+    renderNav(path) +
+    '<main class="phases">' + path.phases.map(function(p){ return renderPhase(path.id, p); }).join('') + '</main>' +
   '</div>';
 }
-function buildDoc(state){
-  return '<!doctype html>\n' +
-'<html lang="en">\n' +
-'<head>\n' +
-'<meta charset="utf-8">\n' +
-'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
-'<title>Azure Study Path</title>\n' +
-FONT_LINK + '\n' +
-'<style id="page-style">' + STYLE_CSS + '</style>\n' +
-'</head>\n' +
-'<body>\n' +
-'<div id="app">' + renderBody(state) + '</div>\n' +
-'<script id="state-data" type="application/json">' + JSON.stringify(Array.from(state)) + '<\/script>\n' +
-'<script>' + SELF_SCRIPT + '<\/script>\n' +
-'</body>\n' +
-'</html>';
+function renderBody(){
+  return '<div class="wrap">' +
+    renderTabs() +
+    PATHS.map(renderPanel).join('') +
+    '<footer class="page-footer">Check off items as you go — progress is saved per tab in this browser.</footer>' +
+  '</div>';
 }
 
-const state = new Set(JSON.parse(document.getElementById('state-data').textContent || '[]'));
-let saveStatus = 'saved';
-let saveTimer = null;
-let artifactNs = null;
-
-function mount(){
-  document.getElementById('app').innerHTML = renderBody(state);
-}
-function onToggle(e){
-  const t = e.target;
-  if (!t.classList || !t.classList.contains('chk')) return;
-  const id = t.dataset.id;
-  if (t.checked) state.add(id); else state.delete(id);
-  saveStatus = 'unsaved';
-  mount();
-  const el = document.getElementById(id);
-  if (el) el.focus();
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveNow, 700);
-}
-function saveNow(){
-  if (!artifactNs){
-    saveStatus = 'local';
-    mount();
-    return;
-  }
-  saveStatus = 'saving';
-  mount();
-  artifactNs.publish(buildDoc(state)).then(function(){
-    saveStatus = 'saved';
-    mount();
-  }).catch(function(err){
-    if (err && err.code === 'conflict') return;
-    saveStatus = 'error';
-    mount();
+function update(){
+  PATHS.forEach(function(path){
+    const all = countPath(path);
+    const pct = pctOf(all.done, all.total);
+    document.querySelector('[data-overallfill="' + path.id + '"]').style.width = pct + '%';
+    document.querySelector('[data-overalltext="' + path.id + '"]').textContent =
+      all.done + ' / ' + all.total + ' complete · ' + pct + '%';
+    document.querySelector('[data-tabfill="' + path.id + '"]').style.width = pct + '%';
+    document.querySelector('[data-tabcount="' + path.id + '"]').textContent = all.done + '/' + all.total;
+    path.phases.forEach(function(p){
+      const key = path.id + '-' + p.id;
+      const c = countPhase(path.id, p);
+      document.querySelector('[data-fill="' + key + '"]').style.width = pctOf(c.done, c.total) + '%';
+      document.querySelector('[data-count="' + key + '"]').textContent = c.done + ' / ' + c.total;
+      const chip = document.querySelector('[data-chip="' + key + '"]');
+      chip.classList.toggle('complete', c.total > 0 && c.done === c.total);
+      chip.querySelector('.chip-count').textContent = c.done + '/' + c.total;
+    });
   });
 }
 
-mount();
-document.getElementById('app').addEventListener('change', onToggle);
-if (window.claude && window.claude.use){
-  window.claude.use('artifact').then(function(ns){ artifactNs = ns; }).catch(function(){});
+function activate(pathId, opts){
+  const known = PATHS.some(function(p){ return p.id === pathId; });
+  if (!known) return;
+  PATHS.forEach(function(p){
+    const on = p.id === pathId;
+    const tab = document.querySelector('[data-tab="' + p.id + '"]');
+    tab.setAttribute('aria-selected', String(on));
+    tab.tabIndex = on ? 0 : -1;
+    document.querySelector('[data-panel="' + p.id + '"]').hidden = !on;
+  });
+  storeSet(TAB_KEY, pathId);
+  if (opts && opts.focus) document.querySelector('[data-tab="' + pathId + '"]').focus();
+  if (opts && opts.scrollTop) window.scrollTo(0, 0);
 }
+
+// A hash like #java-p12 should open the Java tab, not just fail to scroll.
+function activateFromHash(){
+  const hash = (location.hash || '').replace(/^#/, '');
+  if (!hash) return false;
+  const path = PATHS.find(function(p){ return hash.indexOf(p.id + '-') === 0; });
+  if (!path) return false;
+  activate(path.id);
+  const target = document.getElementById(hash);
+  if (target) target.scrollIntoView();
+  return true;
+}
+
+loadStates();
+document.getElementById('app').innerHTML = renderBody();
+update();
+
+if (!activateFromHash()){
+  activate(storeGet(TAB_KEY) || PATHS[0].id);
+}
+window.addEventListener('hashchange', activateFromHash);
+
+document.querySelector('.tabs').addEventListener('click', function(e){
+  const tab = e.target.closest('[data-tab]');
+  if (tab) activate(tab.dataset.tab, {scrollTop:true});
+});
+document.querySelector('.tabs').addEventListener('keydown', function(e){
+  const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+  if (!dir) return;
+  e.preventDefault();
+  const ids = PATHS.map(function(p){ return p.id; });
+  const current = ids.indexOf(document.activeElement.dataset.tab);
+  if (current < 0) return;
+  activate(ids[(current + dir + ids.length) % ids.length], {focus:true});
+});
+
+document.getElementById('app').addEventListener('change', function(e){
+  const t = e.target;
+  if (!t.classList || !t.classList.contains('chk')) return;
+  const pathId = t.dataset.pathId;
+  if (t.checked) states[pathId].add(t.dataset.id); else states[pathId].delete(t.dataset.id);
+  t.closest('.item').classList.toggle('done', t.checked);
+  update();
+  saveState(pathId);
+});
 </script>
+</body>
+</html>
