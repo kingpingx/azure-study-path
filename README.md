@@ -1,14 +1,14 @@
 # Azure Study Path
 
+**Live: [kingpingx.github.io/azure-study-path](https://kingpingx.github.io/azure-study-path/)**
+
 A phase-by-phase Azure learning checklist, tailored to a C#/.NET, PostgreSQL, and Angular
 stack — from first account setup to a certified, production-shaped deployment.
 
 ## Usage
 
-Open `index.html` directly in a browser, or enable GitHub Pages for this repo
-(Settings → Pages → deploy from the `main` branch) to view it as a hosted site.
-
-Progress is tracked with checkboxes and saved in the page itself (no backend needed).
+Open the [live page](https://kingpingx.github.io/azure-study-path/) and check items off as
+you go, or open `index.html` directly in a browser to use it offline.
 
 ## Structure
 
