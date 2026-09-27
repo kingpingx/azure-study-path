@@ -3,7 +3,7 @@
 **Live: [kingpingx.github.io/azure-study-path](https://kingpingx.github.io/azure-study-path/)**
 
 Phase-by-phase learning checklists for a C#/.NET, PostgreSQL, and Angular developer.
-Six tabs, 59 phases, 444 items — each tab tracks its own progress.
+Six tabs, 67 phases, 572 items — each tab tracks its own progress.
 
 ## Usage
 
@@ -20,9 +20,9 @@ beyond the surface. Each tab has its own accent colour.
 | --- | ---: | ---: | --- |
 | **Azure** | 14 | 89 | One cloud in depth, for the .NET stack |
 | **Java** | 16 | 138 | Language, Spring, persistence, security, delivery |
-| **Distributed Systems** | 9 | 68 | Failure, consistency, replication, consensus, resilience |
-| **Scaling** | 7 | 57 | Measurement, caching, the database ladder, load management |
-| **Event-Driven** | 8 | 59 | Kafka, delivery guarantees, schemas, outbox/CDC/saga/CQRS |
+| **Distributed Systems** | 9 | 88 | Failure, consistency, replication, consensus, resilience |
+| **Scaling** | 8 | 74 | Measurement, caching, the database ladder, load management |
+| **Event-Driven** | 15 | 150 | RabbitMQ, Kafka and Azure side by side, from events to a production .NET system |
 | **System Design** | 5 | 33 | A repeatable method and problems to work end to end |
 
 The last four tabs are language-neutral — they apply equally to the .NET work you do today
@@ -32,12 +32,15 @@ implementation lives in the language tab and the thinking lives in the systems t
 - Redis and Spring Cache mechanics are in **Java**; cache patterns, stampedes and
   invalidation strategy are in **Scaling**.
 - `@KafkaListener`, outbox wiring and consumer tests are in **Java**; broker semantics,
-  schema evolution and the integration patterns are in **Event-Driven**.
+  schema evolution and the integration patterns are in **Event-Driven**, which teaches
+  each topic across RabbitMQ, Kafka and Azure with the loop concept → example → failure
+  scenario → solution → interview question. **Distributed Systems** and **Scaling** use the
+  same loop, with examples in .NET, Postgres and Azure, and each ends in a hands-on capstone.
 - Postgres engine internals are in **Java**; replicas, partitioning and sharding are in
   **Scaling**.
 
 Two tabs open with a collapsible translation table: **Java** maps each .NET tool to its Java
-counterpart, and **Event-Driven** maps Azure and .NET messaging to the Kafka/OSS stack.
+counterpart, and **Event-Driven** maps each messaging concept across RabbitMQ, Kafka and Azure.
 
 ## Notes
 

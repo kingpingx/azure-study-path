@@ -146,6 +146,11 @@ details.map[open]>summary::after{content:'\2212';}
 .item-body{display:flex;flex-direction:column;gap:4px;}
 .item-text{font-size:.94rem;line-height:1.45;}
 .item.done .item-text{color:var(--text-dim);text-decoration:line-through;text-decoration-color:var(--border);}
+.step{display:inline-block;font-family:var(--font-mono);font-weight:600;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--surface-2);color:var(--text-dim);vertical-align:1px;}
+.step-failure{color:var(--danger);}
+.step-solution{color:var(--accent);}
+.step-interview{background:var(--accent-soft);color:var(--accent);}
+.item.done .step{opacity:.6;}
 .item-note{font-size:.8rem;color:var(--text-dim);line-height:1.42;padding-left:9px;border-left:2px solid var(--border);}
 footer.page-footer{color:var(--text-faint);font-size:.78rem;text-align:center;margin-top:10px;}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
@@ -164,6 +169,7 @@ footer.page-footer{color:var(--text-faint);font-size:.78rem;text-align:center;ma
 <script>
 // Item ids are derived from position (p<phase>i<index>) and saved progress is keyed on them,
 // so add new items at the END of a phase's list to keep existing progress intact.
+// An item's optional k is its step in the loop concept → example → failure → solution → interview.
 
 const AZURE_PHASES = [
   {
@@ -614,13 +620,16 @@ const DISTRIBUTED_PHASES = [
     title:`Foundations and Failure`,
     desc:`Why a remote call is not a method call. Everything else in this tab follows from this phase.`,
     items:[
-      {text:`The fallacies of distributed computing, and which one you are currently assuming`},
-      {text:`Partial failure: the request that neither succeeded nor failed, and why "unknown" is a third outcome you must design for`, deep:true, note:`A timeout tells you nothing about whether the work happened. This is why idempotency exists.`},
-      {text:`Latency numbers worth memorising: memory vs SSD vs same-datacentre network vs cross-region`},
-      {text:`Failure detection: heartbeats, timeouts, phi-accrual — and why you cannot distinguish a slow node from a dead one`, deep:true, note:`This single impossibility is the root of most distributed-systems complexity, including consensus.`},
-      {text:`Safety vs liveness: what the system guarantees always, versus what it guarantees eventually`},
-      {text:`Availability math: serial dependencies multiply, so five 99.9% services in a request path are not 99.9%`, deep:true},
-      {text:`Failure domains: process, node, rack, availability zone, region — and matching redundancy to each`},
+      {k:'concept', text:`The fallacies of distributed computing, and which one you are currently assuming`},
+      {k:'concept', text:`Partial failure: the request that neither succeeded nor failed, and why "unknown" is a third outcome you must design for`, deep:true, note:`A timeout tells you nothing about whether the work happened. This is why idempotency exists.`},
+      {k:'concept', text:`Failure detection: heartbeats, timeouts, phi-accrual — and why you cannot distinguish a slow node from a dead one`, deep:true, note:`This single impossibility is the root of most distributed-systems complexity, including consensus.`},
+      {k:'concept', text:`Safety vs liveness: what the system guarantees always, versus what it guarantees eventually`},
+      {k:'concept', text:`Latency numbers worth memorising: memory vs SSD vs same-datacentre network vs cross-region`},
+      {k:'example', text:`Availability math on your own request path: five 99.9% dependencies in series are 99.5%, not 99.9%`, deep:true},
+      {k:'example', text:`Failure domains on Azure — process, node, availability zone, region — and what zone-redundant Container Apps and Postgres flexible server HA actually protect you from`},
+      {k:'failure', text:`A payment call times out, the client retries, and the customer is charged twice — the first call had succeeded`},
+      {k:'solution', text:`Treat a timeout as "unknown": send an idempotency key, then retry safely or query the outcome before acting again`},
+      {k:'interview', text:`"A downstream call timed out. Did the operation happen? What does your code do next?"`},
     ]
   },
   {
@@ -628,13 +637,16 @@ const DISTRIBUTED_PHASES = [
     title:`Time, Ordering and Consistency`,
     desc:`The vocabulary that makes the rest of the tab precise. Worth being pedantic about.`,
     items:[
-      {text:`Physical clocks, NTP drift and clock skew — why timestamps from two machines are not comparable`},
-      {text:`Logical clocks: happens-before, Lamport timestamps, and vector clocks`},
-      {text:`Why last-write-wins silently loses data, and the alternatives: version vectors, explicit merge, CRDTs`, deep:true},
-      {text:`Consistency models: linearizable, sequential, causal, read-your-writes, monotonic reads, eventual`, deep:true, note:`Learn these as a ladder of guarantees. Most real systems live at causal or read-your-writes, not at either extreme.`},
-      {text:`CAP and PACELC — what they actually claim, and the everyday latency-versus-consistency trade-off when there is no partition`},
-      {text:`Transaction isolation vs distributed consistency: serializable is not linearizable, and ACID terms collide with CAP terms`, deep:true},
-      {text:`Map the models onto tools you use: Postgres primary vs replica, Redis, Kafka, DynamoDB, Cosmos DB consistency levels`},
+      {k:'concept', text:`Physical clocks, NTP drift and clock skew — why timestamps from two machines are not comparable`},
+      {k:'concept', text:`Logical clocks: happens-before, Lamport timestamps, and vector clocks`},
+      {k:'concept', text:`Consistency models: linearizable, sequential, causal, read-your-writes, monotonic reads, eventual`, deep:true, note:`Learn these as a ladder of guarantees. Most real systems live at causal or read-your-writes, not at either extreme.`},
+      {k:'concept', text:`CAP and PACELC — what they actually claim, and the everyday latency-versus-consistency trade-off when there is no partition`},
+      {k:'concept', text:`Transaction isolation vs distributed consistency: serializable is not linearizable, and ACID terms collide with CAP terms`, deep:true},
+      {k:'example', text:`The ladder in real tools: Postgres primary vs replica, Redis, Kafka — and Cosmos DB's five consistency levels (strong, bounded staleness, session, consistent prefix, eventual) as a concrete menu`},
+      {k:'example', text:`Optimistic concurrency in .NET: an EF Core concurrency token on Postgres's xmin, and the conflict exception you must handle`},
+      {k:'failure', text:`Two servers write the same record with last-write-wins on wall-clock time; a skewed clock lets the older write win and the newer one silently vanishes`, deep:true},
+      {k:'solution', text:`Version numbers and compare-and-set instead of timestamps; version vectors, explicit merge or CRDTs when concurrent writes are legitimate`},
+      {k:'interview', text:`"Explain CAP — then tell me why PACELC is the more useful one day to day."`},
     ]
   },
   {
@@ -642,13 +654,16 @@ const DISTRIBUTED_PHASES = [
     title:`Replication`,
     desc:`Keeping more than one copy of the data, and what each strategy costs.`,
     items:[
-      {text:`Single-leader replication: synchronous vs asynchronous followers, failover, and the writes you lose in a failover`},
-      {text:`Replication lag in practice: read-your-writes, monotonic reads, and consistent-prefix reads`, deep:true, note:`The user who updates their profile and then sees the old value is a replication-lag bug, not a caching bug.`},
-      {text:`Multi-leader replication and write conflicts: detection, resolution, and why it is rarely worth it`},
-      {text:`Leaderless and quorum replication: R + W > N, sloppy quorums, hinted handoff, read repair, anti-entropy`, deep:true},
-      {text:`Split-brain: what causes it, and fencing as the mitigation`},
-      {text:`Synchronous replication and its availability cost — why "wait for all replicas" reduces uptime`},
-      {text:`Concrete systems: Postgres streaming and logical replication, Redis replication, Kafka ISR, and what each does on failover`},
+      {k:'concept', text:`Single-leader replication: synchronous vs asynchronous followers, failover, and the writes you lose in a failover`},
+      {k:'concept', text:`Replication lag in practice: read-your-writes, monotonic reads, and consistent-prefix reads`, deep:true, note:`The user who updates their profile and then sees the old value is a replication-lag bug, not a caching bug.`},
+      {k:'concept', text:`Multi-leader replication and write conflicts: detection, resolution, and why it is rarely worth it`},
+      {k:'concept', text:`Leaderless and quorum replication: R + W > N, sloppy quorums, hinted handoff, read repair, anti-entropy`, deep:true},
+      {k:'example', text:`Postgres streaming vs logical replication; on Azure, flexible server's zone-redundant HA (a synchronous standby) vs read replicas (asynchronous)`},
+      {k:'example', text:`Redis replication and Kafka's in-sync replicas — and what each does on failover`},
+      {k:'failure', text:`Split-brain: two nodes both believe they are primary and both accept writes`},
+      {k:'failure', text:`A user saves their profile, the next read hits a lagging replica, and the old value comes back`},
+      {k:'solution', text:`One write authority enforced by fencing; read-your-writes by routing post-write reads to the primary or waiting for the replica to reach the write's LSN`},
+      {k:'interview', text:`"Your primary failed over to an asynchronous replica. What did you lose, and how would you know?"`},
     ]
   },
   {
@@ -656,13 +671,16 @@ const DISTRIBUTED_PHASES = [
     title:`Partitioning and Placement`,
     desc:`Splitting data across nodes. The choices here are the hardest to reverse later.`,
     items:[
-      {text:`Range vs hash partitioning: range scans versus even distribution`},
-      {text:`Consistent hashing and virtual nodes — why naive modulo hashing makes every resize a full reshuffle`, deep:true},
-      {text:`Hot keys and skew: detecting them, and mitigations such as key salting, dedicated partitions, and per-key limits`, deep:true},
-      {text:`Rebalancing without downtime, and why fixed partition counts are a common simplification`},
-      {text:`Secondary indexes: local (scatter-gather reads) vs global (write amplification)`, deep:true},
-      {text:`Request routing: client-side partition awareness, a routing tier, or any-node coordination`},
-      {text:`Choosing a partition key: cardinality, access pattern, and whether it matches your transaction boundary`, deep:true, note:`Partition key and aggregate boundary should usually be the same thing. When they diverge you inherit distributed transactions.`},
+      {k:'concept', text:`Range vs hash partitioning: range scans versus even distribution`},
+      {k:'concept', text:`Consistent hashing and virtual nodes — why naive modulo hashing makes every resize a full reshuffle`, deep:true},
+      {k:'concept', text:`Secondary indexes: local (scatter-gather reads) vs global (write amplification)`, deep:true},
+      {k:'concept', text:`Request routing: client-side partition awareness, a routing tier, or any-node coordination`},
+      {k:'example', text:`Partition keys in real systems: Postgres declarative partitioning, the Citus distribution column (elastic clusters on Azure Database for PostgreSQL), the Cosmos DB partition key, the Kafka message key`},
+      {k:'failure', text:`A hot key: one large tenant drives 80% of traffic to one partition, which throttles while the rest sit idle`, deep:true},
+      {k:'failure', text:`The partition key does not match the transaction boundary, so every business write becomes a cross-partition operation`},
+      {k:'solution', text:`Choose the key to match the aggregate; mitigate skew with key salting, dedicated partitions and per-key limits`, deep:true, note:`Partition key and aggregate boundary should usually be the same thing. When they diverge you inherit distributed transactions.`},
+      {k:'solution', text:`Rebalancing without downtime, and why a fixed, generous partition count is a common simplification`},
+      {k:'interview', text:`"Choose a partition key for a multi-tenant orders table. What breaks when one tenant is 100× bigger than the rest?"`},
     ]
   },
   {
@@ -670,13 +688,14 @@ const DISTRIBUTED_PHASES = [
     title:`Consensus and Coordination`,
     desc:`You will rarely implement these, but you will depend on them daily and be asked about them in interviews.`,
     items:[
-      {text:`The consensus problem, FLP impossibility in one sentence, and why quorums work anyway in practice`},
-      {text:`Raft: leader election, log replication, commit index — enough to explain it at a whiteboard`, deep:true},
-      {text:`What a quorum actually guarantees, and what a minority partition can and cannot do`, deep:true},
-      {text:`Coordination services and where they hide: etcd (Kubernetes), ZooKeeper, Consul, Kafka KRaft`},
-      {text:`Distributed locks: why a lock with a TTL is unsafe on its own, and fencing tokens`, deep:true, note:`Read both sides of the Redlock debate. The fencing-token argument is the one that generalises beyond Redis.`},
-      {text:`Leader election for singleton workloads: schedulers, compaction jobs, outbox relays`},
-      {text:`Membership and gossip protocols — how clusters agree on who is alive`},
+      {k:'concept', text:`The consensus problem, FLP impossibility in one sentence, and why quorums work anyway in practice`},
+      {k:'concept', text:`Raft: leader election, log replication, commit index — enough to explain it at a whiteboard`, deep:true},
+      {k:'concept', text:`What a quorum actually guarantees, and what a minority partition can and cannot do`, deep:true},
+      {k:'concept', text:`Coordination services and where they hide: etcd (Kubernetes), ZooKeeper, Consul, Kafka KRaft; membership and gossip`},
+      {k:'example', text:`Singletons in .NET: leader election with an Azure Blob lease or a Postgres advisory lock, for an outbox relay or a scheduled job`},
+      {k:'failure', text:`A lock with a TTL: the holder stalls in a GC pause, the lock expires, a second holder acquires it — and both write`, deep:true},
+      {k:'solution', text:`Fencing tokens: a monotonically increasing number the protected resource checks, so a stale holder's write is rejected`, deep:true, note:`Read both sides of the Redlock debate. The fencing-token argument is the one that generalises beyond Redis.`},
+      {k:'interview', text:`"Only one of five replicas may run the nightly job. How do you guarantee it — and what if the leader stalls halfway?"`},
     ]
   },
   {
@@ -684,14 +703,16 @@ const DISTRIBUTED_PHASES = [
     title:`Transactions Across Services`,
     desc:`What replaces a database transaction once the work spans two systems. The most practically useful phase here.`,
     items:[
-      {text:`Why two-phase commit is avoided: the blocking coordinator and its availability cost`},
-      {text:`Delivery semantics: at-most-once, at-least-once, and why "exactly-once" is an effect you build, not a guarantee you buy`, deep:true},
-      {text:`Idempotency in practice: idempotency keys, dedup tables, naturally idempotent operations, and idempotent HTTP methods`, deep:true, note:`If you learn one thing in this tab, learn to make every operation safe to repeat. It makes retries, redelivery and failover all survivable.`},
-      {text:`The dual-write problem: you cannot atomically write a database and a message broker`, deep:true},
-      {text:`The transactional outbox as the standard answer — see the Event-Driven tab for the implementation`},
-      {text:`Sagas: choreography vs orchestration, compensating actions, timeouts, and semantic rollback`, deep:true, note:`A compensation is not a rollback — money already refunded is a new fact, not an erased one. Design compensations as first-class business operations.`},
-      {text:`Eventual consistency in user-facing APIs: 202 Accepted plus a status resource, and optimistic UI`},
-      {text:`Reconciliation jobs and audit trails — how you detect and repair the drift that will happen anyway`, deep:true},
+      {k:'concept', text:`Why two-phase commit is avoided: the blocking coordinator and its availability cost`},
+      {k:'concept', text:`Exactly-once is an effect you build, not a guarantee you buy: at-least-once plus idempotency`, deep:true},
+      {k:'concept', text:`Idempotency in practice: idempotency keys, dedup tables, naturally idempotent operations, and idempotent HTTP methods`, deep:true, note:`If you learn one thing in this tab, learn to make every operation safe to repeat. It makes retries, redelivery and failover all survivable.`},
+      {k:'concept', text:`The dual-write problem: you cannot atomically write a database and a message broker`, deep:true},
+      {k:'example', text:`The transactional outbox as the standard answer — built step by step in the Event-Driven tab`},
+      {k:'example', text:`Sagas: choreography vs orchestration, compensating actions and timeouts — orchestrated with Durable Functions or a MassTransit state machine`, deep:true, note:`A compensation is not a rollback — money already refunded is a new fact, not an erased one. Design compensations as first-class business operations.`},
+      {k:'example', text:`Eventual consistency in user-facing APIs: 202 Accepted plus a status resource, and optimistic UI in Angular`},
+      {k:'failure', text:`The card is charged, the order service crashes, and the order is never confirmed — money taken, nothing shipped`},
+      {k:'solution', text:`Reconciliation jobs and audit trails — how you detect and repair the drift that will happen anyway`, deep:true},
+      {k:'interview', text:`"Book a flight, a hotel and a car through three services. How do you keep it consistent without two-phase commit?"`},
     ]
   },
   {
@@ -699,16 +720,17 @@ const DISTRIBUTED_PHASES = [
     title:`Resilience and Fault Tolerance`,
     desc:`Assume every dependency will be slow or down. This phase is mostly a checklist you can apply to code you already have.`,
     items:[
-      {text:`Timeouts on every remote call — HTTP clients, database, cache, broker; nothing should default to waiting forever`, deep:true, note:`Missing timeouts, not slow services, are what turn a partial outage into a cascading one.`},
-      {text:`Retries with exponential backoff and jitter; retry only idempotent operations; retry budgets and retry storms`, deep:true},
-      {text:`Circuit breakers, bulkheads, rate limiters and time limiters — Resilience4j in Java, Polly in .NET`, deep:true},
-      {text:`Graceful degradation: serve stale cache, return defaults, disable non-essential features under load`},
-      {text:`Load shedding and admission control at the edge: 429 and 503 with Retry-After, using queue depth as the signal`},
-      {text:`Health checks done properly: liveness vs readiness vs startup, and why a deep health check can cascade an outage`, deep:true},
-      {text:`Graceful shutdown: drain in-flight requests, stop consuming, commit offsets, close pools`},
-      {text:`Chaos experiments: kill a node, a broker, a replica — with Toxiproxy or Chaos Mesh — and watch what really happens`},
-      {text:`SLIs, SLOs and error budgets; disaster recovery with RPO, RTO and a rehearsed restore`},
-      {text:`Read Release It! (Michael Nygard) — the stability patterns and antipatterns in one place`},
+      {k:'concept', text:`Timeouts on every remote call — HTTP clients, database, cache, broker; nothing should default to waiting forever`, deep:true, note:`Missing timeouts, not slow services, are what turn a partial outage into a cascading one.`},
+      {k:'concept', text:`Retries with exponential backoff and jitter; retry only idempotent operations; retry budgets`, deep:true},
+      {k:'concept', text:`Circuit breakers, bulkheads, rate limiters and graceful degradation — serve stale data, return defaults, switch off non-essentials`, deep:true},
+      {k:'example', text:`.NET: AddStandardResilienceHandler from Microsoft.Extensions.Http.Resilience (Polly v8) — timeout, retry and circuit breaker per HttpClient; Resilience4j is the Java equivalent`},
+      {k:'example', text:`Health checks done properly: liveness vs readiness vs startup in ASP.NET Core, wired to Container Apps or Kubernetes probes`, deep:true},
+      {k:'example', text:`Load shedding at the edge: 429 and 503 with Retry-After, and graceful shutdown that drains in-flight work`},
+      {k:'failure', text:`A retry storm: three layers each retrying three times turns one call into 27 against a dependency that is already struggling`, deep:true},
+      {k:'failure', text:`A deep health check fails when the database is slow, the orchestrator restarts every instance, and a slowdown becomes a full outage`},
+      {k:'solution', text:`Retry at one layer only, within a budget; keep liveness shallow; give every call a timeout shorter than its caller's`},
+      {k:'solution', text:`Prove it: chaos experiments with Azure Chaos Studio or Toxiproxy, SLOs with error budgets, and a rehearsed restore against a stated RPO and RTO`},
+      {k:'interview', text:`"A dependency's latency jumps from 50 ms to 5 s. Walk through what happens to your service, and what stops the cascade."`},
     ]
   },
   {
@@ -716,28 +738,32 @@ const DISTRIBUTED_PHASES = [
     title:`Service Architecture`,
     desc:`How to cut a system into services — and how long to wait before you do.`,
     items:[
-      {text:`Modular monolith first: enforce boundaries with Spring Modulith or ArchUnit, and extract a service only once a boundary proves itself`, deep:true, note:`A distributed monolith — services that must deploy together — is strictly worse than the monolith you started with.`},
-      {text:`Domain-driven design essentials: bounded contexts, aggregates, ubiquitous language`, deep:true},
-      {text:`Data ownership: database per service, no shared tables, and how to handle the joins you just lost`},
-      {text:`Choosing sync or async per interaction; REST vs gRPC vs messaging`},
-      {text:`API gateway and backend-for-frontend: routing, edge authentication, rate limits, response aggregation for Angular`},
-      {text:`Service discovery and configuration: Kubernetes DNS, ConfigMaps and Secrets versus Eureka and Consul`, note:`Much of the older Spring Cloud Netflix stack is superseded by Kubernetes primitives — know it to read old code, not to start new work.`},
-      {text:`Evolving safely: strangler fig migration, anti-corruption layers, expand/contract schema changes`},
-      {text:`Versioning and compatibility across independently deployed services`},
-      {text:`Write architecture decision records — one per significant choice, including the options you rejected`},
-      {text:`Read Building Microservices (Sam Newman) and Domain-Driven Design Distilled (Vaughn Vernon)`},
+      {k:'concept', text:`Modular monolith first: enforce boundaries in code, and extract a service only once a boundary proves itself`, deep:true, note:`A distributed monolith — services that must deploy together — is strictly worse than the monolith you started with.`},
+      {k:'concept', text:`Domain-driven design essentials: bounded contexts, aggregates, ubiquitous language`, deep:true},
+      {k:'concept', text:`Data ownership: database per service, no shared tables, and how to handle the joins you just lost`},
+      {k:'concept', text:`Choosing sync or async per interaction; REST vs gRPC vs messaging`},
+      {k:'example', text:`Enforcing module boundaries: NetArchTest or ArchUnitNET in .NET, Spring Modulith or ArchUnit in Java`},
+      {k:'example', text:`Gateway and backend-for-frontend: Azure API Management or YARP for routing, edge authentication, rate limits and response aggregation for Angular`},
+      {k:'example', text:`Discovery and configuration: Container Apps or Kubernetes DNS, Azure App Configuration and Key Vault — instead of Eureka and Consul`},
+      {k:'failure', text:`The distributed monolith: one team changes a shared table and three other services break; releases need a coordinated deploy`},
+      {k:'solution', text:`Strangler fig migration, anti-corruption layers, expand/contract schema changes, and versioned contracts between services`},
+      {k:'solution', text:`Write an architecture decision record for each significant choice, including the options you rejected`},
+      {k:'interview', text:`"When would you split a monolith into services, and where would you make the first cut?"`},
     ]
   },
   {
-    id:'p9', num:'09', tag:null,
-    title:`Deepening`,
-    desc:`Where to go once the vocabulary is solid.`,
+    id:'p9', num:'09', tag:'Core focus',
+    title:`Capstone — Break a Real System`,
+    desc:`Build something small on Azure, fail it on purpose, and write down what really happened. Reading alongside.`,
     items:[
-      {text:`Designing Data-Intensive Applications (Kleppmann), chapters 5–9`, deep:true, note:`Replication, partitioning, transactions, the trouble with distributed systems, and consistency/consensus. These five chapters are the spine of this entire tab.`},
-      {text:`Read one primary source: the Raft paper, the Dynamo paper, or the Spanner paper`},
-      {text:`Jepsen analyses — pick two databases you use and read what broke under partition`, deep:true},
-      {text:`Follow one system's failure modes end to end: how does your Postgres setup behave when the primary's disk fills?`},
-      {text:`Explain CAP, idempotency and sagas aloud to someone else without notes`},
+      {k:'concept', text:`Designing Data-Intensive Applications (Kleppmann), chapters 5–9`, deep:true, note:`Replication, partitioning, transactions, the trouble with distributed systems, and consistency/consensus. These five chapters are the spine of this entire tab.`},
+      {k:'concept', text:`One primary source — the Raft, Dynamo or Spanner paper — and Release It! (Nygard) for the stability patterns`},
+      {k:'concept', text:`Jepsen analyses: pick two databases you use and read what broke under partition`, deep:true},
+      {k:'example', text:`Build: two ASP.NET Core services on Container Apps, Postgres flexible server with zone-redundant HA and a read replica, the standard resilience handler, idempotency keys and an outbox`},
+      {k:'failure', text:`Drill: force a Postgres failover, inject latency and kill replicas with Chaos Studio, fill the primary's disk — record exactly what each user saw`, deep:true},
+      {k:'solution', text:`Write a blameless postmortem for each drill, fix the worst finding, and turn the rest into a runbook`},
+      {k:'interview', text:`Explain CAP, idempotency and sagas aloud to someone else, without notes`},
+      {k:'interview', text:`"Design a system that stays correct when any single node, zone or dependency fails."`},
     ]
   },
 ];
@@ -748,14 +774,15 @@ const SCALING_PHASES = [
     title:`Measure Before You Scale`,
     desc:`Almost every scaling mistake is optimising something that was not the bottleneck. Start here, every time.`,
     items:[
-      {text:`Define SLIs and one real SLO; percentiles (p50/p95/p99) and why averages hide the problem`, deep:true},
-      {text:`Back-of-envelope estimation: QPS, storage per day, bandwidth, connection counts`},
-      {text:`Load testing with k6, Gatling or JMeter: open vs closed workload models, ramping, realistic data`, deep:true, note:`A closed-loop test with fixed virtual users hides queueing collapse — the test slows down with the system. Use an open model (fixed arrival rate) to find the cliff.`},
-      {text:`Little's Law: concurrency = arrival rate × latency, and what it predicts about your thread pools`, deep:true},
-      {text:`Profiling: flame graphs with async-profiler or JFR (dotnet-trace in .NET), plus allocation profiling`},
-      {text:`Find the first bottleneck and fix only that — it is usually a connection pool, a lock, or GC`, deep:true},
-      {text:`Capacity planning: the knee of the latency curve, headroom targets, and what you will do at 2× traffic`},
-      {text:`Continuous performance testing in CI so a regression is caught before production`},
+      {k:'concept', text:`Define SLIs and one real SLO; percentiles (p50/p95/p99) and why averages hide the problem`, deep:true},
+      {k:'concept', text:`Back-of-envelope estimation: QPS, storage per day, bandwidth, connection counts`},
+      {k:'concept', text:`Little's Law: concurrency = arrival rate × latency, and what it predicts about your thread and connection pools`, deep:true},
+      {k:'example', text:`Load testing with k6 or Azure Load Testing: open vs closed workload models, ramping, realistic data`, deep:true, note:`A closed-loop test with fixed virtual users hides queueing collapse — the test slows down with the system. Use an open model (fixed arrival rate) to find the cliff.`},
+      {k:'example', text:`Profiling .NET: dotnet-counters, dotnet-trace and flame graphs, allocation profiling, and the Application Insights profiler in production`},
+      {k:'failure', text:`The team adds Redis and doubles the instance count, and p99 does not move — the bottleneck was a 10-connection database pool`},
+      {k:'solution', text:`Find the first bottleneck and fix only that — it is usually a connection pool, a lock, or GC`, deep:true},
+      {k:'solution', text:`Capacity planning from the knee of the latency curve, with headroom targets — and a performance test in CI so regressions are caught before production`},
+      {k:'interview', text:`"p99 latency doubled after a release. How do you find out why?"`},
     ]
   },
   {
@@ -763,29 +790,33 @@ const SCALING_PHASES = [
     title:`Stateless Services and Load Balancing`,
     desc:`The precondition for horizontal scaling. Cheap to get right early, expensive to retrofit.`,
     items:[
-      {text:`Twelve-Factor statelessness: no in-memory sessions, no local files, no instance-local caches you depend on`},
-      {text:`L4 vs L7 load balancing, and algorithms: round robin, least connections, EWMA / least latency`},
-      {text:`Health checks, connection draining and slow-start, so a deploy does not dump traffic on a cold instance`},
-      {text:`Why sticky sessions undermine elasticity, and what to do instead`},
-      {text:`NGINX, HAProxy and Envoy; what a service mesh adds and what it costs`},
-      {text:`Client-side load balancing, and how retries interact badly with a load balancer that is already failing over`, deep:true},
-      {text:`Idempotency as a scaling prerequisite — you cannot safely retry across instances without it`},
+      {k:'concept', text:`Twelve-Factor statelessness: no in-memory sessions, no local files, no instance-local caches you depend on`},
+      {k:'concept', text:`L4 vs L7 load balancing, and algorithms: round robin, least connections, EWMA / least latency`},
+      {k:'concept', text:`Why sticky sessions undermine elasticity, and what to do instead`},
+      {k:'example', text:`Azure's options: Load Balancer (L4), Application Gateway (regional L7), Front Door (global L7) — and YARP, NGINX or Envoy when you run your own`},
+      {k:'example', text:`ASP.NET Core state that silently breaks at two instances: Data Protection keys (persist to Blob Storage, protect with Key Vault), SignalR (Azure SignalR Service), session (Redis)`, deep:true},
+      {k:'failure', text:`Scaled to three instances, users are randomly logged out and antiforgery tokens fail — each instance generated its own Data Protection keys`},
+      {k:'failure', text:`A deploy dumps full traffic on cold instances, and client retries pile onto a load balancer that is already failing over`, deep:true},
+      {k:'solution', text:`Shared key ring and external state; readiness checks, connection draining and slow start; idempotent endpoints so retries across instances are safe`},
+      {k:'interview', text:`"What must be true of a service before you can put it behind a load balancer and run ten copies?"`},
     ]
   },
   {
     id:'p3', num:'03', tag:'Core focus',
     title:`Caching Strategy`,
-    desc:`The cheapest scaling lever and the richest source of subtle bugs. Mechanics live in the Java tab; this is the thinking.`,
+    desc:`The cheapest scaling lever and the richest source of subtle bugs.`,
     items:[
-      {text:`Where to cache: browser, CDN, edge, gateway, application, database — and the invalidation cost of each layer`},
-      {text:`Patterns: cache-aside, read-through, write-through, write-behind, refresh-ahead`, deep:true},
-      {text:`Invalidation strategy: TTL design, event-driven eviction, and versioned keys instead of deletes`, deep:true, note:`Versioned keys — append a version to the cache key and bump it — sidestep most of the races that plague explicit deletes.`},
-      {text:`Cache stampede: request coalescing, jittered TTLs, early recomputation`, deep:true},
-      {text:`Cache penetration and negative caching; bloom filters for existence checks`},
-      {text:`Sizing: working set, hit ratio targets, eviction policies (LRU, LFU, allkeys-lru) and what a low hit rate is telling you`},
-      {text:`HTTP caching: Cache-Control, ETag, stale-while-revalidate, and a CDN in front of both the SPA and the API`},
-      {text:`Two-level caching (in-process plus shared) and the coherence problem it creates`, deep:true},
-      {text:`When not to cache: write-heavy data, low reuse, and correctness-critical reads`},
+      {k:'concept', text:`Where to cache: browser, CDN, edge, gateway, application, database — and the invalidation cost of each layer`},
+      {k:'concept', text:`Patterns: cache-aside, read-through, write-through, write-behind, refresh-ahead`, deep:true},
+      {k:'concept', text:`Invalidation strategy: TTL design, event-driven eviction, and versioned keys instead of deletes`, deep:true, note:`Versioned keys — append a version to the cache key and bump it — sidestep most of the races that plague explicit deletes.`},
+      {k:'concept', text:`Sizing: working set, hit-ratio targets, eviction policies (LRU, LFU) and what a low hit rate is telling you`},
+      {k:'example', text:`.NET: IMemoryCache, IDistributedCache, HybridCache (two levels with stampede protection) and output caching — backed by Azure Managed Redis`},
+      {k:'example', text:`HTTP caching: Cache-Control, ETag and stale-while-revalidate, with Front Door in front of both the Angular SPA and the API`},
+      {k:'failure', text:`Cache stampede: a hot key expires and 5,000 concurrent requests hit Postgres at once`, deep:true},
+      {k:'failure', text:`Penetration and incoherence: lookups for IDs that do not exist bypass the cache, and in a two-level cache one instance keeps serving a value another has updated`, deep:true},
+      {k:'solution', text:`Request coalescing, jittered TTLs and early recomputation; negative caching or a bloom filter; a pub/sub eviction message for the local layer`},
+      {k:'solution', text:`Knowing when not to cache: write-heavy data, low reuse, and correctness-critical reads`},
+      {k:'interview', text:`"Design caching for a product catalogue that is read a thousand times per write. How is it invalidated?"`},
     ]
   },
   {
@@ -793,16 +824,17 @@ const SCALING_PHASES = [
     title:`Scaling the Database`,
     desc:`Usually the real bottleneck. Climb this ladder in order — each rung is cheaper to undo than the next.`,
     items:[
-      {text:`The ladder: query and index tuning → connection pooling → caching → read replicas → partitioning → sharding`, deep:true, note:`Most systems never need to leave the first four rungs. Sharding is the hardest thing on this page to undo.`},
-      {text:`Query and index tuning first: read the plan, add the covering index, kill the N+1`},
-      {text:`Connection pooling: why more connections make Postgres slower, pool sizing, and PgBouncer's transaction-pooling caveats`, deep:true},
-      {text:`Read replicas: routing read-only work, and handling replication lag for reads that follow a write`, deep:true},
-      {text:`Table partitioning: range, list and hash; retention by dropping partitions instead of deleting rows`},
-      {text:`Sharding: shard-key choice, cross-shard queries and transactions, resharding, and directory vs algorithmic routing`, deep:true},
-      {text:`Write hotspots: hot rows, counter contention, batching, and queue-then-write`, deep:true},
-      {text:`CQRS read models and materialised views for queries too expensive to serve from the write model`},
-      {text:`Polyglot persistence: when the workload has outgrown Postgres — OLAP (ClickHouse, BigQuery), search (OpenSearch), time-series, key-value`},
-      {text:`Multi-tenancy at the data layer: shared schema, schema per tenant, database per tenant`},
+      {k:'concept', text:`The ladder: query and index tuning → connection pooling → caching → read replicas → partitioning → sharding`, deep:true, note:`Most systems never need to leave the first four rungs. Sharding is the hardest thing on this page to undo.`},
+      {k:'concept', text:`Connection pooling: why more connections make Postgres slower, pool sizing, and PgBouncer's transaction-pooling caveats`, deep:true},
+      {k:'concept', text:`Read replicas and replication lag for reads that follow a write; table partitioning, with retention by dropping partitions`, deep:true},
+      {k:'concept', text:`Sharding: shard-key choice, cross-shard queries and transactions, resharding, directory vs algorithmic routing`, deep:true},
+      {k:'example', text:`Postgres on Azure: EXPLAIN (ANALYZE, BUFFERS), pg_stat_statements and Query Store; flexible server's built-in PgBouncer, read replicas, and elastic clusters (Citus) for sharding`},
+      {k:'example', text:`EF Core: kill the N+1, AsNoTracking for reads, split queries, ExecuteUpdate for set-based writes, and logging the SQL you actually send`},
+      {k:'failure', text:`Scaling the app from 5 to 50 instances with a pool of 100 each asks Postgres for 5,000 connections — and it falls over`},
+      {k:'failure', text:`A write hotspot: every request updates one counter row, and lock contention caps throughput no matter how many instances you add`, deep:true},
+      {k:'solution', text:`Pool through PgBouncer with a hard cap; batch or queue-then-write hot rows; CQRS read models and materialised views for expensive queries`},
+      {k:'solution', text:`When Postgres is the wrong tool: OLAP, search, time-series and key-value stores; multi-tenancy by shared schema, schema per tenant, or database per tenant`},
+      {k:'interview', text:`"The database is at 90% CPU. Walk through what you would do, in order."`},
     ]
   },
   {
@@ -810,15 +842,16 @@ const SCALING_PHASES = [
     title:`Asynchrony and Load Management`,
     desc:`Controlling how much work enters the system, and when. The difference between degrading and collapsing.`,
     items:[
-      {text:`Decide what must be synchronous and move everything else off the request path`},
-      {text:`Queue-based load leveling: absorbing spikes instead of provisioning for them`},
-      {text:`Bounded queues as a deliberate design choice`, deep:true, note:`An unbounded queue does not remove a throughput problem — it converts it into an out-of-memory crash, later, with the work already accepted.`},
-      {text:`Backpressure end to end, and consumer lag as the primary health signal for async work`, deep:true},
-      {text:`Rate limiting algorithms: token bucket, leaky bucket, fixed and sliding window; distributed counters`, deep:true},
-      {text:`Throttling, quotas and fair sharing so one tenant cannot starve the rest`},
-      {text:`Load shedding and admission control: reject early, prioritise, and protect the critical path`},
-      {text:`Batching, debouncing and write coalescing`},
-      {text:`Why a long timeout in front of a full queue is worse than failing fast`, deep:true},
+      {k:'concept', text:`Move everything that need not be synchronous off the request path; queue-based load leveling absorbs spikes instead of provisioning for them`},
+      {k:'concept', text:`Bounded queues as a deliberate design choice`, deep:true, note:`An unbounded queue does not remove a throughput problem — it converts it into an out-of-memory crash, later, with the work already accepted.`},
+      {k:'concept', text:`Backpressure end to end, and consumer lag as the primary health signal for async work`, deep:true},
+      {k:'concept', text:`Rate limiting algorithms: token bucket, leaky bucket, fixed and sliding window; distributed counters`, deep:true},
+      {k:'example', text:`ASP.NET Core rate-limiting middleware with per-tenant partitions, and API Management rate-limit and quota policies at the edge`},
+      {k:'example', text:`Load leveling on Azure: the API writes to Service Bus, KEDA-scaled workers drain it; bounded System.Threading.Channels inside a process`},
+      {k:'failure', text:`A sale-day spike fills an unbounded in-memory queue until the process runs out of memory — and all the accepted work is lost`},
+      {k:'failure', text:`A long timeout in front of a full queue: callers wait 30 seconds to fail, holding threads and connections the whole time`, deep:true},
+      {k:'solution', text:`Admission control and load shedding that reject early and protect the critical path; quotas and fair sharing per tenant; batching and write coalescing`},
+      {k:'interview', text:`"Design rate limiting for a public API with free and paid tiers, running on 20 instances."`},
     ]
   },
   {
@@ -826,13 +859,15 @@ const SCALING_PHASES = [
     title:`Elasticity and Runtime`,
     desc:`Adding and removing capacity automatically, and the runtime details that make that go wrong.`,
     items:[
-      {text:`Horizontal vs vertical scaling — and when vertical is still the correct, boring answer`},
-      {text:`Autoscaling on the right signal: CPU, requests per second, queue depth (KEDA), or a custom metric`, deep:true},
-      {text:`Scale-up lag and cold starts: JVM JIT warm-up, .NET tiered compilation, connection pool priming, warm pools`, deep:true},
-      {text:`Resource requests and limits, and how a CPU limit silently changes GC threads and default pool sizes`},
-      {text:`Connection storms on scale-out — every new replica opens a pool, and the database notices`, deep:true},
-      {text:`Scale-to-zero and its trade-offs; serverless as a scaling model`},
-      {text:`Cost awareness: right-sizing, spot and reserved capacity, and the cost of over-provisioned headroom`},
+      {k:'concept', text:`Horizontal vs vertical scaling — and when vertical is still the correct, boring answer`},
+      {k:'concept', text:`Autoscaling on the right signal: CPU, requests per second, queue depth, or a custom metric`, deep:true},
+      {k:'concept', text:`Scale-to-zero and its trade-offs; serverless as a scaling model`},
+      {k:'example', text:`Azure: Container Apps scale rules (HTTP, Service Bus queue length, Kafka lag via KEDA), App Service autoscale, and Functions Flex Consumption`},
+      {k:'example', text:`Cold starts in .NET: ReadyToRun, Native AOT, tiered PGO, pool priming, and a minimum replica count`, deep:true},
+      {k:'failure', text:`A connection storm on scale-out: every new replica opens a full pool, and the database notices before the users do`, deep:true},
+      {k:'failure', text:`Autoscaling flaps — scaling in and out every few minutes — and a CPU limit silently shrinks GC threads and thread-pool defaults`},
+      {k:'solution', text:`Cooldowns, sensible min and max replicas, pool caps behind PgBouncer, and right-sizing with reserved or spot capacity to control cost`},
+      {k:'interview', text:`"Autoscaling kicked in, but latency got worse. Why might that happen?"`},
     ]
   },
   {
@@ -840,131 +875,287 @@ const SCALING_PHASES = [
     title:`Global Scale`,
     desc:`Multi-region is a large step in cost and complexity. Know what you get for it before taking it.`,
     items:[
-      {text:`Single-region multi-AZ first — and being clear about what that already protects you from`},
-      {text:`Active-passive vs active-active; RPO and RTO as the deciding numbers`},
-      {text:`Global traffic routing: anycast, GeoDNS, and edge front doors`},
-      {text:`Data locality and residency requirements, and cross-region replication lag`},
-      {text:`Multi-region writes and the consistency bill: conflict resolution or a single write region`, deep:true},
-      {text:`Edge caching and edge compute for the SPA and read-heavy endpoints`},
-      {text:`Failover drills: practising a region evacuation before you need one`},
+      {k:'concept', text:`Single-region multi-AZ first — and being clear about what that already protects you from`},
+      {k:'concept', text:`Active-passive vs active-active; RPO and RTO as the deciding numbers`},
+      {k:'concept', text:`Multi-region writes and the consistency bill: conflict resolution or a single write region`, deep:true},
+      {k:'example', text:`Azure: Front Door or Traffic Manager for global routing, Postgres flexible server geo-redundant backup and cross-region replicas, Cosmos DB multi-region writes`},
+      {k:'example', text:`Data residency requirements, and edge caching for the SPA and read-heavy endpoints`},
+      {k:'failure', text:`The region goes down: the failover runbook has never been run, DNS TTLs hold clients on the dead region, and replica lag loses the last minutes of writes`},
+      {k:'solution', text:`Failover drills on a schedule — practise the region evacuation before you need it, and measure the real RPO and RTO`},
+      {k:'interview', text:`"Make this app survive a full Azure region outage. What does it cost, and what do you lose?"`},
+    ]
+  },
+  {
+    id:'p8', num:'08', tag:'Core focus',
+    title:`Capstone — Scale a Real .NET Service on Azure`,
+    desc:`Take one service from baseline to a stated target, measuring after every change. The write-up is the deliverable.`,
+    items:[
+      {k:'concept', text:`Set the target before touching code: an SLO and a load (for example 2,000 RPS at p99 under 300 ms)`, deep:true},
+      {k:'example', text:`Baseline: an ASP.NET Core API and Postgres flexible server on Container Apps, load-tested until it breaks`, deep:true},
+      {k:'example', text:`Climb the ladder one change at a time — queries, pooling, HybridCache with Redis, a read replica — and measure after each`},
+      {k:'example', text:`Move a slow write path behind Service Bus with KEDA-scaled workers, and add rate limiting and load shedding`},
+      {k:'failure', text:`Drill: spike from 1 to 20 replicas at 3× target load — watch connection counts, cold starts, and whether the service degrades or collapses`, deep:true},
+      {k:'solution', text:`Write it up: a before/after table of p99 and cost per thousand requests, and the bottleneck you found at each step`},
+      {k:'interview', text:`Tell the story in five minutes — "how I scaled this service" — naming the change you tried that did not help`},
     ]
   },
 ];
 
+// Examples name the broker they apply to, so every phase is learned across RabbitMQ, Kafka and Azure.
 const EVENTS_PHASES = [
   {
     id:'p1', num:'01', tag:'Core focus',
-    title:`Why Events`,
-    desc:`The modelling decisions that come before any broker. Getting these wrong is more expensive than choosing the wrong technology.`,
+    title:`What EDA Actually Is`,
+    desc:`Event, producer, consumer, broker — the four nouns every later phase builds on, seen once in each of RabbitMQ, Kafka and Azure.`,
     items:[
-      {text:`Vocabulary: message, command, event, query; queue vs publish/subscribe vs log`, deep:true, note:`A command is addressed to one handler and may be rejected. An event is a statement of fact addressed to no one. Mixing them up is the most common modelling error.`},
-      {text:`Event kinds: notification, event-carried state transfer, domain event — and what each costs the consumer`},
-      {text:`Synchronous vs asynchronous: what you gain in coupling and failure isolation, and what you pay in debuggability`, deep:true},
-      {text:`Events as a public API: naming, ownership, versioning, and who is allowed to break them`, deep:true},
-      {text:`Choreography vs orchestration as a default posture for a whole system`},
-      {text:`Event storming: discovering events, commands and boundaries with the domain experts`},
-      {text:`When not to use events: request/response is still correct for most reads`},
+      {k:'concept', text:`An event is an immutable fact about something that already happened, named in the past tense — OrderPlaced, not PlaceOrder`, deep:true},
+      {k:'concept', text:`Producer, consumer, broker: the producer does not know who consumes, and the broker is what lets it not know`, deep:true, note:`The decoupling is in three directions: time (the consumer can be down), space (the producer knows no addresses) and scale (consumers are added without touching the producer).`},
+      {k:'concept', text:`Event kinds: thin notification, event-carried state transfer, and domain events versus integration events — and what each costs the consumer`},
+      {k:'concept', text:`Event sourcing is not EDA: storing state as events is a persistence choice, publishing events is an integration choice`, note:`Most systems need events, not event sourcing. Reach for it in audit-critical domains such as ledgers.`},
+      {k:'example', text:`Run all three locally and publish one OrderPlaced to each: RabbitMQ and Kafka in Docker, and the Azure Service Bus emulator`, note:`A .NET Aspire AppHost can host RabbitMQ, Kafka and the Service Bus emulator together, which turns this into an afternoon's setup.`},
+      {k:'example', text:`Azure's three event services at a glance: Service Bus for business messages, Event Hubs for high-volume streams, Event Grid for push notifications about state changes`},
+      {k:'failure', text:`The distributed monolith: services exchange events, but every consumer still calls the producer back synchronously before it can act — one outage still takes everything down`},
+      {k:'solution', text:`Carry enough state in the event for the consumer to act alone, and let each service keep a local copy of the data it needs`},
+      {k:'interview', text:`"What is event-driven architecture, and what does it give you that direct REST calls between services do not?"`},
     ]
   },
   {
     id:'p2', num:'02', tag:'Core focus',
-    title:`Kafka — The Log Model`,
-    desc:`The broker you will most likely be asked about. Run a local cluster and break it on purpose.`,
+    title:`Event vs Command vs Message`,
+    desc:`A very important distinction. It decides your broker topology, your coupling, and who is allowed to say no.`,
     items:[
-      {text:`Architecture: brokers, topics, partitions, offsets, KRaft — and a local cluster in Docker`},
-      {text:`Durability settings: acks, replication factor, ISR, min.insync.replicas, unclean leader election`, deep:true, note:`acks=all with replication factor 3 and min.insync.replicas=2 is the usual durable baseline. Know exactly what each one gives up.`},
-      {text:`Producers: idempotent producer, retries, batching and linger, compression, and partition key choice`, deep:true},
-      {text:`Ordering: guaranteed within a partition only — key by the entity whose order matters`, deep:true},
-      {text:`Consumers and consumer groups: assignment, eager vs cooperative rebalancing, commit strategies, and max.poll interval`, deep:true},
-      {text:`Consumer lag: what it means, how to alert on it, and why concurrency is capped by partition count`},
-      {text:`Retention, log compaction, and tiered storage — the topic as a replayable source of truth`},
-      {text:`Kafka transactions and read-process-write exactly-once semantics, and precisely where they stop`, deep:true, note:`EOS covers Kafka-to-Kafka. It does not extend to your database or an outbound HTTP call.`},
+      {k:'concept', text:`A message is the envelope; command and event are the two intents it can carry`, deep:true, note:`A command is addressed to one handler and may be rejected. An event is a statement of fact addressed to no one. Mixing them up is the most common modelling error.`},
+      {k:'concept', text:`Command: imperative (ReserveStock), exactly one logical receiver, and the sender expects it done — or to hear that it failed`},
+      {k:'concept', text:`Event: past tense, zero to many receivers, cannot be rejected — only reacted to`},
+      {k:'concept', text:`Query: a request for data, and why it rarely belongs on a broker`},
+      {k:'example', text:`Map intent to topology: a command goes to one queue (RabbitMQ direct or default exchange, a Service Bus queue); an event fans out (RabbitMQ fanout or topic exchange, a Service Bus topic, a Kafka topic read by many consumer groups)`, deep:true},
+      {k:'example', text:`Envelope anatomy — message id, type, correlation id, causation id, timestamp — as RabbitMQ properties and headers, Kafka record headers, and Service Bus MessageId, CorrelationId and ApplicationProperties`},
+      {k:'failure', text:`An "event" called SendWelcomeEmail: the producer now depends on the email service existing, and when a second team subscribes the user gets two emails`},
+      {k:'solution', text:`Rename it UserRegistered and let the email service decide; if you genuinely need something done, send a command to its queue and own that dependency openly`},
+      {k:'interview', text:`"Is OrderCreated a command or an event? What about CreateOrder? How does the answer change your broker topology?"`},
     ]
   },
   {
     id:'p3', num:'03', tag:null,
-    title:`Other Brokers, and Choosing One`,
-    desc:`Kafka is not always the answer. Knowing the alternatives is how you avoid a log where a queue would do.`,
+    title:`Pub/Sub vs Queue`,
+    desc:`Scaling the work versus copying the news — and the log, which gives you both.`,
     items:[
-      {text:`RabbitMQ: exchanges (direct, topic, fanout, headers), queues, bindings, acknowledgements, prefetch`, deep:true},
-      {text:`Smart broker vs dumb log: per-message acknowledgement and routing versus replayable offsets`, deep:true, note:`Prefer RabbitMQ for task distribution, per-message retry and complex routing; prefer Kafka when you need replay, high throughput, or many independent consumers of the same stream.`},
-      {text:`Dead-letter exchanges, delayed and scheduled messages, priority queues`},
-      {text:`Managed equivalents: Azure Service Bus and Event Hubs, AWS SQS/SNS/Kinesis, Google Pub/Sub`},
-      {text:`Postgres as a queue with SELECT … FOR UPDATE SKIP LOCKED — when one fewer moving part wins`, deep:true},
-      {text:`Know the names: NATS, Pulsar, Redis Streams, and what niche each fills`},
-      {text:`Write the decision down: pick a broker for one real use case and justify it in an ADR`},
+      {k:'concept', text:`Queue (point-to-point): competing consumers, each message handled by one of them — this scales work`},
+      {k:'concept', text:`Publish/subscribe: every subscriber gets its own copy — this scales fan-out`},
+      {k:'concept', text:`The log: Kafka and Event Hubs keep messages after they are read; consumers track their own position and can replay`, deep:true, note:`A queue deletes a message once it is acknowledged; a log keeps it until retention expires. That one difference sits behind most "Kafka or RabbitMQ" questions.`},
+      {k:'example', text:`RabbitMQ: pub/sub is one queue per subscriber bound to a fanout or topic exchange; competing consumers is several consumers on one queue`},
+      {k:'example', text:`Kafka: consumer groups give both at once — the same group means competing consumers, different groups mean pub/sub`},
+      {k:'example', text:`Azure: Service Bus queue versus topic plus subscriptions; Event Hubs consumer groups; Event Grid pushing to webhook, Function and queue handlers`},
+      {k:'failure', text:`You scale a service to three replicas and each creates its own queue, group id or subscription — every order is now processed three times`},
+      {k:'solution', text:`Subscription identity belongs to the logical service, not the instance: replicas share one queue name, one group.id, one subscription`},
+      {k:'interview', text:`"When would you pick a queue over pub/sub? How does Kafka give you both with the same topic?"`},
     ]
   },
   {
     id:'p4', num:'04', tag:'Core focus',
-    title:`Delivery and Correctness`,
-    desc:`How an asynchronous system stays correct when messages arrive twice, late, or out of order — because they will.`,
+    title:`RabbitMQ Fundamentals — with Kafka and Azure Beside It`,
+    desc:`Learn RabbitMQ's model properly, then map the same ideas onto Kafka and Azure so each new broker is a translation, not a restart.`,
     items:[
-      {text:`At-least-once as the practical default, and designing every consumer for duplicates`, deep:true},
-      {text:`Idempotent consumers: dedup keys, inbox tables, and naturally idempotent side effects`, deep:true, note:`The dedup record and the side effect must be written in the same transaction, or you have just moved the dual-write problem.`},
-      {text:`Poison messages: retry with backoff, retry topics, dead-letter topics, and who is paged when the DLQ fills`, deep:true},
-      {text:`What breaks ordering in practice: retries, parallel consumers, rebalances, and partition changes`, deep:true},
-      {text:`Late and out-of-order events: version numbers, reordering buffers, and watermarks`},
-      {text:`Message expiry and TTLs: dropping versus parking a message that is no longer useful`},
-      {text:`Failure injection: kill a consumer mid-batch and prove no event was lost or double-applied`, deep:true},
+      {k:'concept', text:`RabbitMQ model: producer → exchange → binding → queue → consumer; producers never publish to a queue directly`, deep:true},
+      {k:'concept', text:`Exchange types: direct (exact routing key), topic (wildcards * and #), fanout (ignores the key), headers — and the default exchange`},
+      {k:'concept', text:`Routing key versus binding key: order.eu.created matches the bindings order.*.created and order.#`},
+      {k:'concept', text:`Queue types: quorum (replicated, the default choice), classic, and streams — RabbitMQ's own log`, note:`Classic mirrored queues were removed in RabbitMQ 4.0; quorum queues replace them.`},
+      {k:'concept', text:`Acknowledgements and prefetch: manual ack, nack or reject with requeue, prefetch (QoS) as the backpressure knob — and publisher confirms for the producer side`, deep:true},
+      {k:'example', text:`.NET: declare an exchange, queue and binding with RabbitMQ.Client 7's async API, publish with confirms, and consume with manual acks`},
+      {k:'concept', text:`Kafka model: topics, partitions and offsets; brokers, replication factor and in-sync replicas; KRaft instead of ZooKeeper since Kafka 4.0`},
+      {k:'concept', text:`Kafka durability: acks, replication factor, min.insync.replicas, unclean leader election`, deep:true, note:`acks=all with replication factor 3 and min.insync.replicas=2 is the usual durable baseline. Know exactly what each one gives up.`},
+      {k:'example', text:`.NET: a Confluent.Kafka producer and a consumer in a group that commits offsets manually`},
+      {k:'concept', text:`Azure Service Bus model: namespace → queue, or topic → subscriptions with SQL or correlation filters (the routing-key equivalent); peek-lock versus receive-and-delete; Basic, Standard and Premium tiers`, deep:true},
+      {k:'concept', text:`Event Hubs is Kafka-shaped — partitions, consumer groups, checkpoints in Blob Storage, and a Kafka-protocol endpoint; Event Grid is push-based routing of Azure and custom events`},
+      {k:'example', text:`.NET: ServiceBusProcessor from Azure.Messaging.ServiceBus, and EventProcessorClient from Azure.Messaging.EventHubs`},
+      {k:'failure', text:`A message published to an exchange with no matching binding is dropped silently — the publish "succeeds" and nothing ever arrives`},
+      {k:'solution', text:`The mandatory flag with a return handler, an alternate exchange, and declaring topology idempotently on both sides at startup`},
+      {k:'interview', text:`"Walk me through a message from publish to ack in RabbitMQ. Where can it be lost, and what closes each gap?"`},
     ]
   },
   {
     id:'p5', num:'05', tag:'Core focus',
-    title:`Schemas and Contracts`,
-    desc:`The most common way an event-driven system breaks in production is a schema change nobody coordinated.`,
+    title:`Delivery Semantics`,
+    desc:`At-most-once, at-least-once, exactly-once — and which point in the pipeline each promise actually covers.`,
     items:[
-      {text:`Serialization formats: JSON, Avro, Protobuf — size, speed, and schema support`},
-      {text:`Schema Registry and compatibility modes: backward, forward, full, none`, deep:true, note:`Pick a compatibility mode before the first consumer ships. Changing it afterwards is a migration, not a setting.`},
-      {text:`Safe evolution: additive fields with defaults, never reuse or renumber a field, never change a type in place`, deep:true},
-      {text:`Envelope design: event id, type, version, occurred-at, correlation id, causation id`, deep:true},
-      {text:`Documenting events with AsyncAPI, and contract tests between producer and consumer`},
-      {text:`Handling a genuinely breaking change: dual publish, upcasting on read, or a versioned topic`, deep:true},
-      {text:`Ownership and governance: who owns a topic, who may consume it, and how deprecation is announced`},
+      {k:'concept', text:`At-most-once: acknowledge or commit before processing — fast, and loses the message on a crash`},
+      {k:'concept', text:`At-least-once: process, then acknowledge — the practical default, which guarantees duplicates sooner or later`, deep:true},
+      {k:'concept', text:`Exactly-once is a property of the whole system, not the broker: "effectively once" is at-least-once plus idempotent processing`, deep:true, note:`When a vendor says exactly-once, ask: between which two points?`},
+      {k:'example', text:`RabbitMQ: autoAck versus manual ack; unacked messages redelivered with the redelivered flag when a channel closes; publisher confirms on the way in`},
+      {k:'example', text:`Kafka: commit before versus after processing, the traps in enable.auto.commit, the idempotent producer, and transactions for read-process-write`, deep:true, note:`Kafka's exactly-once covers Kafka-to-Kafka. It does not extend to your database or an outbound HTTP call.`},
+      {k:'example', text:`Azure: Service Bus ReceiveAndDelete (at-most-once) versus PeekLock (at-least-once), lock duration and renewal; Event Hubs checkpoint frequency decides how much is reprocessed after a restart`},
+      {k:'failure', text:`The handler outlives its lock or max.poll.interval.ms — the message is redelivered to another consumer while the first is still working, and Kafka evicts the slow consumer and rebalances`},
+      {k:'failure', text:`The publisher fires and forgets, and the broker node dies before the write is replicated — the message is gone and nobody saw an error`},
+      {k:'solution', text:`Confirm every publish (publisher confirms, acks=all, awaited SendMessageAsync), bound handler time, renew locks, and size max.poll.records to the work`},
+      {k:'interview', text:`"Can you get exactly-once delivery? How would you get exactly-once processing from Kafka into Postgres?"`, note:`Outline: not across systems. Store the offset or message id in the same database transaction as the side effect, or use an inbox table.`},
     ]
   },
   {
     id:'p6', num:'06', tag:'Core focus',
-    title:`Integration Patterns`,
+    title:`Retries and Dead-Letter Queues`,
+    desc:`What happens to the message that fails — once, ten times, or forever.`,
+    items:[
+      {k:'concept', text:`Transient versus permanent failures: retry the first, park the second`, deep:true},
+      {k:'concept', text:`Retry layers: in-process (Polly), broker redelivery, and delayed retry — and why an immediate requeue is a hot loop`},
+      {k:'concept', text:`Exponential backoff with jitter, and a retry budget so retries cannot become their own outage`},
+      {k:'example', text:`RabbitMQ: dead-letter exchanges (x-dead-letter-exchange), delayed retry via TTL plus DLX retry queues, and the quorum-queue delivery limit`},
+      {k:'example', text:`Kafka: the broker has no DLQ — build retry topics (orders.retry.5s, orders.retry.1m) and a dead-letter topic, and know what non-blocking retries cost in ordering`, deep:true},
+      {k:'example', text:`Azure: Service Bus MaxDeliveryCount into the built-in dead-letter sub-queue with a reason, scheduled messages for delayed retry; Event Grid's retry policy and blob dead-lettering; Event Hubs has no DLQ at all`},
+      {k:'failure', text:`A poison message — malformed JSON — is requeued forever: one message blocks the queue, CPU sits at 100%, and the logs flood`, deep:true},
+      {k:'failure', text:`The DLQ fills quietly for three weeks and nobody notices`},
+      {k:'solution', text:`Classify exceptions, bound retries, dead-letter with the original headers plus the failure reason, alert on DLQ depth, and keep a tested redrive tool`, deep:true},
+      {k:'interview', text:`"Design retries for a payment consumer that calls a flaky third-party API. What goes to the DLQ, and who reprocesses it?"`},
+    ]
+  },
+  {
+    id:'p7', num:'07', tag:'Core focus',
+    title:`Idempotency`,
+    desc:`Handling duplicate events safely. At-least-once delivery makes this mandatory, not optional.`,
+    items:[
+      {k:'concept', text:`An idempotent consumer: handling the same message twice has the same effect as handling it once`, deep:true},
+      {k:'concept', text:`Naturally idempotent operations (SET status = 'Paid', upserts) versus ones that are not (INSERT a payment, balance += 10, send an email)`},
+      {k:'concept', text:`Choosing the dedup key: message id versus business key, and producer-assigned ids that survive a retry`},
+      {k:'example', text:`Postgres: a processed_messages table with a unique constraint, written in the same transaction as the side effect`, deep:true, note:`The dedup record and the side effect must be written in the same transaction, or you have just moved the dual-write problem.`},
+      {k:'example', text:`What the brokers give you, and where it stops: Kafka's idempotent producer (producer to broker only), Service Bus duplicate detection (a time window on the sender side), RabbitMQ nothing`},
+      {k:'example', text:`Idempotent outbound calls: an Idempotency-Key header to the payment provider, with the outcome stored`},
+      {k:'failure', text:`The consumer charges the card, crashes before the ack, the message is redelivered — and the customer is charged twice`},
+      {k:'solution', text:`Dedup and side effect in one transaction; for external calls, pass an idempotency key and record the result before acknowledging`},
+      {k:'interview', text:`"The same PaymentCaptured event arrives twice. Walk me through exactly how you prevent a double side effect — including a crash between the steps."`},
+    ]
+  },
+  {
+    id:'p8', num:'08', tag:'Core focus',
+    title:`Ordering and Concurrency`,
+    desc:`Every broker orders something. Know exactly what, and what quietly breaks it once you add consumers.`,
+    items:[
+      {k:'concept', text:`Global order is almost never needed; per-entity order usually is — key by the entity whose order matters`, deep:true},
+      {k:'concept', text:`Ordering costs throughput: each ordered stream gets one consumer at a time, so parallelism comes from having many streams`},
+      {k:'example', text:`RabbitMQ: FIFO per queue only with one consumer; single active consumer; the consistent-hash exchange to shard by key`},
+      {k:'example', text:`Kafka: order within a partition only, set by the partition key; concurrency capped by partition count; the idempotent producer keeping order across retries`},
+      {k:'example', text:`Azure: Service Bus sessions (SessionId) for per-entity FIFO with many receivers; the Event Hubs partition key`, deep:true},
+      {k:'concept', text:`Concurrency inside one consumer: bounded parallelism with Channels or SemaphoreSlim, and hot keys that skew one partition`},
+      {k:'failure', text:`What breaks ordering in practice: retries, parallel handlers, prefetch with concurrency, rebalances, and repartitioning`, deep:true},
+      {k:'failure', text:`OrderCancelled is processed before OrderCreated after a retry — and the cancelled order comes back to life`},
+      {k:'solution', text:`Version numbers on events and "ignore anything older than what I hold" on the read side; serialise per key, not globally`},
+      {k:'solution', text:`Plan the partition count up front — raising it later reshuffles keys and breaks per-key ordering`, deep:true},
+      {k:'interview', text:`"Events for one account must be processed in order, but you want 50 consumers. How do you do it in Kafka, RabbitMQ and Service Bus?"`},
+    ]
+  },
+  {
+    id:'p9', num:'09', tag:null,
+    title:`Eventual Consistency`,
+    desc:`Every service is consistent with itself now and with the others later. How much later is a product decision.`,
+    items:[
+      {k:'concept', text:`The consistency window: measure it, bound it, and agree it with the product owner`, deep:true},
+      {k:'concept', text:`CQRS: a write model plus read models built from events — and rebuilding a projection from scratch`},
+      {k:'concept', text:`Read-your-writes in the UI: 202 Accepted with a status resource, optimistic updates in Angular, or returning the written data`},
+      {k:'example', text:`Orders writes, while Inventory and Search catch up from events — instrument the end-to-end lag on each broker`},
+      {k:'failure', text:`A user places an order, refreshes, and it is not in "My orders" — so they place it again`},
+      {k:'failure', text:`A consumer is down for an hour and its read model serves stale data with no sign that anything is wrong`},
+      {k:'solution', text:`Show pending states in the UX, expose versions or timestamps, pair with idempotent commands, and alert on lag instead of hoping`},
+      {k:'interview', text:`"How would you explain eventual consistency to a product manager, and how do you keep it bounded?"`},
+    ]
+  },
+  {
+    id:'p10', num:'10', tag:'Core focus',
+    title:`Outbox and Inbox Patterns`,
     desc:`The patterns that make events correct rather than merely asynchronous. The centre of this tab.`,
     items:[
-      {text:`The dual-write problem: you cannot atomically write your database and your broker`, deep:true, note:`This is the single most important idea in the tab. Every pattern below exists because of it.`},
-      {text:`Transactional outbox: the business row and the outbox row in one transaction, then a relay publishes`, deep:true},
-      {text:`Change data capture with Debezium over Postgres logical decoding — versus a polling publisher`, deep:true},
-      {text:`Inbox pattern: the consumer-side mirror of the outbox, for idempotent consumption`, deep:true},
-      {text:`Sagas in implementation: state machines, compensations, timeouts, and stuck-saga recovery`, deep:true, note:`Look hard at Temporal or Camunda before hand-rolling an orchestrator. Durable timers and retries are most of the work.`},
-      {text:`CQRS: separate write and read models, building projections, and rebuilding one from scratch`},
-      {text:`Event sourcing: events as the source of truth, snapshots, replay — and the real costs`, deep:true, note:`Most systems need events, not event sourcing. Reach for it in audit-critical domains such as ledgers.`},
-      {text:`Claim-check for large payloads, and correlation ids threaded across every hop`},
+      {k:'concept', text:`The dual-write problem: you cannot atomically write your database and your broker`, deep:true, note:`This is the single most important idea in the tab. Every pattern below exists because of it.`},
+      {k:'concept', text:`Transactional outbox: the business row and the outbox row in one transaction, then a relay publishes`, deep:true},
+      {k:'concept', text:`Relay options: a polling publisher using SELECT … FOR UPDATE SKIP LOCKED, versus change data capture with Debezium over Postgres logical decoding`, deep:true},
+      {k:'concept', text:`Inbox: the consumer-side mirror — record the message id and apply the change in one transaction`, deep:true},
+      {k:'example', text:`.NET: build an outbox by hand with EF Core, Postgres and a BackgroundService relay publishing to RabbitMQ — then point the relay at Kafka and at Service Bus`},
+      {k:'example', text:`Then compare the frameworks: MassTransit's EF Core outbox, Wolverine's Postgres outbox and inbox, NServiceBus's outbox`, note:`Check current licensing before choosing — MassTransit and NServiceBus both have commercial terms.`},
+      {k:'failure', text:`SaveChanges succeeds and the publish fails, so the order exists and nobody hears of it — or the publish succeeds, the commit fails, and a ghost event goes out`},
+      {k:'failure', text:`The relay publishes, then crashes before marking the row sent — the event goes out twice`},
+      {k:'solution', text:`The outbox guarantees at-least-once publishing; the inbox makes consumption idempotent; together they give effectively-once`},
+      {k:'interview', text:`"Why not just publish after SaveChanges? Why not wrap both in a TransactionScope?"`, note:`There is no practical distributed transaction spanning Postgres and RabbitMQ or Kafka. Service Bus transactions only span Service Bus entities.`},
     ]
   },
   {
-    id:'p7', num:'07', tag:null,
-    title:`Stream Processing`,
-    desc:`When consuming one message at a time is not enough — aggregation, joins, and windows over a stream.`,
+    id:'p11', num:'11', tag:'Core focus',
+    title:`Saga Pattern`,
+    desc:`A business transaction that spans services, without a distributed lock — choreography versus orchestration.`,
     items:[
-      {text:`Stateless vs stateful processing, and the three main engines: Kafka Streams, Flink, Spark Structured Streaming`},
-      {text:`Windows: tumbling, hopping, sliding and session`},
-      {text:`Event time vs processing time, watermarks, and allowed lateness`, deep:true, note:`Event time is what the business means. Processing time is what is easy. Choosing the easy one is how late data silently disappears from reports.`},
-      {text:`Joins: stream-stream, stream-table, table-table — and the state each one requires`},
-      {text:`State stores, changelog topics, and recovery after a crash`},
-      {text:`Exactly-once in a stream processor, and exactly what it covers`},
-      {text:`Deciding between a stream processor and a plain consumer writing to a database`},
+      {k:'concept', text:`A saga: a sequence of local transactions, each with a compensation, instead of a two-phase commit`, deep:true},
+      {k:'concept', text:`Choreography: services react to each other's events — no coordinator, and the flow exists only implicitly`},
+      {k:'concept', text:`Orchestration: a coordinator sends commands and tracks state — the flow is explicit, at the cost of one more component`, deep:true},
+      {k:'concept', text:`Compensation is a semantic undo (RefundPayment), not a rollback — and some steps, like a sent email, cannot be undone at all`},
+      {k:'example', text:`Build checkout — Order → Payment → Inventory → Shipping — both ways on RabbitMQ`},
+      {k:'example', text:`Orchestrators to know: MassTransit state machines, Durable Functions on Azure, and Temporal`, note:`Look hard at these before hand-rolling an orchestrator. Durable timers and retries are most of the work.`},
+      {k:'failure', text:`Payment succeeded, the inventory reservation timed out, and the refund message itself fails`},
+      {k:'failure', text:`Choreography has grown to nine services and nobody can say what happens when shipping fails`},
+      {k:'solution', text:`A timeout per step, idempotent compensations, persisted saga state, and a sweeper plus dashboard for stuck sagas`, deep:true},
+      {k:'interview', text:`"Choreography or orchestration for checkout? Defend your choice, then tell me how it fails."`},
     ]
   },
   {
-    id:'p8', num:'08', tag:null,
-    title:`Operating Event Systems`,
-    desc:`Running this in production, where the failure modes are quiet rather than loud.`,
+    id:'p12', num:'12', tag:null,
+    title:`Event Versioning and Schema Evolution`,
+    desc:`The most common way an event-driven system breaks in production is a schema change nobody coordinated.`,
     items:[
-      {text:`What to monitor: consumer lag, throughput, DLQ depth, rebalance frequency, end-to-end latency`, deep:true},
-      {text:`Tracing across brokers: propagating context in message headers and using span links for async work`, deep:true},
-      {text:`Replay and backfill: reprocessing safely, and suppressing side effects you do not want to repeat`, deep:true, note:`Design the kill switch for outbound side effects before you need to replay a topic, not during the incident.`},
-      {text:`Partition count planning — raising it later reshuffles keys and breaks per-key ordering`, deep:true},
-      {text:`Topic governance: naming conventions, retention policy, and cleaning up abandoned topics`},
-      {text:`Disaster recovery: MirrorMaker or cluster linking, and the offset translation problem`},
-      {text:`Testing: Testcontainers brokers, consumer contract tests, and a redelivery test in CI`},
-      {text:`Read Designing Event-Driven Systems (Stopford) and Enterprise Integration Patterns (Hohpe & Woolf)`},
+      {k:'concept', text:`Events are a public API: naming, ownership, versioning, and who is allowed to break them`, deep:true},
+      {k:'concept', text:`Compatibility modes — backward, forward, full — and the deploy order each one forces`, deep:true, note:`Pick a compatibility mode before the first consumer ships. Changing it afterwards is a migration, not a setting.`},
+      {k:'concept', text:`Safe evolution: additive fields with defaults, a tolerant reader, never reuse or renumber a field, never change a type in place`, deep:true},
+      {k:'example', text:`Formats and registries: JSON, Avro and Protobuf; Confluent Schema Registry for Kafka, Azure Schema Registry in Event Hubs; a type-and-version header convention on RabbitMQ and Service Bus`},
+      {k:'example', text:`CloudEvents as a shared envelope (native in Event Grid, with Kafka and AMQP bindings), and AsyncAPI to document topics and queues`},
+      {k:'example', text:`Large payloads and size limits: the claim-check pattern with Blob Storage when an event outgrows the broker`},
+      {k:'failure', text:`The producer renames customerId to clientId: old consumers read null and write corrupt data — and old events still sitting on the Kafka log keep the old shape for every replay`},
+      {k:'solution', text:`For a real breaking change: a new event version, dual publishing through the migration, upcasting on read, or a versioned topic`, deep:true},
+      {k:'solution', text:`Consumer-driven contract tests between producer and consumer, run in CI`},
+      {k:'interview', text:`"You need to add a required field to an event with six consumers. How do you roll it out without downtime?"`},
+    ]
+  },
+  {
+    id:'p13', num:'13', tag:null,
+    title:`EDA vs Microservices vs Request/Response`,
+    desc:`Three things people treat as one. Knowing where each belongs is how you avoid events where a function call would do.`,
+    items:[
+      {k:'concept', text:`Microservices are an ownership and deployment boundary; EDA is a communication style — you can have either without the other`},
+      {k:'concept', text:`Synchronous versus asynchronous: you gain failure isolation and loose coupling, and pay in debuggability and consistency`, deep:true},
+      {k:'concept', text:`When not to use events: queries, user actions that need an answer now, and simple CRUD`},
+      {k:'concept', text:`The usual hybrid — sync for queries and commands that need an immediate answer, async for propagation — and why request/reply over a broker is usually a smell`},
+      {k:'concept', text:`Messaging versus event streaming: RabbitMQ and Service Bus versus Kafka and Event Hubs; know the names of the stream processors (Kafka Streams, Flink, Azure Stream Analytics)`},
+      {k:'example', text:`Pick a broker per use case and write it down as an ADR: RabbitMQ, Kafka, Service Bus, Event Hubs, Event Grid — or a Postgres table with SKIP LOCKED`, deep:true, note:`RabbitMQ or Service Bus for task distribution, per-message retry and routing; Kafka or Event Hubs for replay, high throughput, and many independent readers of the same stream.`},
+      {k:'failure', text:`A synchronous chain of five services at 99.9% each is 99.5% end to end — and one slow dependency exhausts threads all the way up`},
+      {k:'failure', text:`The reverse mistake: a simple lookup turned into an asynchronous round-trip, adding complexity with no gain`},
+      {k:'interview', text:`"Kafka, RabbitMQ or Azure Service Bus for an order-processing system — which, and why?"`},
+    ]
+  },
+  {
+    id:'p14', num:'14', tag:'Core focus',
+    title:`Observability and Failure Handling`,
+    desc:`Asynchronous systems fail quietly. Running them in production means watching the right numbers and rehearsing the failures.`,
+    items:[
+      {k:'concept', text:`What to watch: consumer lag or queue depth, age of the oldest message, throughput, DLQ depth, end-to-end latency, rebalance frequency`, deep:true},
+      {k:'concept', text:`Tracing across a broker: W3C traceparent in message headers, and span links for batch consumers`, deep:true},
+      {k:'example', text:`OpenTelemetry in .NET: the RabbitMQ.Client and Azure SDK instrumentation, Confluent.Kafka via contrib instrumentation or manual header propagation — exported to Application Insights`},
+      {k:'example', text:`Where to look: the RabbitMQ management UI and Prometheus plugin; Kafka consumer-group lag; Azure Monitor metrics for Service Bus (active and dead-lettered messages) and Event Hubs (throughput, throttling)`},
+      {k:'example', text:`Structured logs carrying correlation id and message id on every line`},
+      {k:'failure', text:`Silent failure: the consumer is running, lag is climbing, and the logs show no errors — stuck on a lock or a rebalance loop`},
+      {k:'failure', text:`Replaying a topic to fix a bug re-sends 40,000 emails`},
+      {k:'solution', text:`Alert on lag and message age, not just exceptions; build the kill switch for outbound side effects before you ever replay`, deep:true, note:`Design the kill switch for outbound side effects before you need to replay a topic, not during the incident.`},
+      {k:'solution', text:`Resilience in the consumer: a circuit breaker that pauses consumption, backpressure through prefetch or max.poll.records, and graceful shutdown that finishes in-flight work`},
+      {k:'solution', text:`Testing: Testcontainers for RabbitMQ and Kafka, the Service Bus emulator, and redelivery and kill-mid-batch tests in CI`, deep:true},
+      {k:'interview', text:`"Consumer lag is growing in production. Walk me through how you diagnose it."`},
+    ]
+  },
+  {
+    id:'p15', num:'15', tag:'Core focus',
+    title:`Design a Production System in .NET + RabbitMQ`,
+    desc:`Everything above in one system — built on RabbitMQ first, then carried to Kafka and Azure to prove the design is not tied to one broker.`,
+    items:[
+      {k:'concept', text:`Design doc first: Orders API (ASP.NET Core + Postgres), Payments, Inventory, Notifications — the events, the commands, and a topology diagram`, deep:true},
+      {k:'example', text:`Build it on RabbitMQ: a topic exchange per bounded context, quorum queues, DLX-based delayed retry, publisher confirms`, deep:true},
+      {k:'example', text:`Outbox in Orders, an inbox in every consumer, idempotent handlers throughout`},
+      {k:'example', text:`Checkout as an orchestrated saga with compensations and per-step timeouts`},
+      {k:'example', text:`A versioned envelope with correlation and causation ids, traced end to end in Application Insights`},
+      {k:'example', text:`Add Kafka: publish order events keyed by orderId, and bring up a new analytics consumer group that replays from offset 0`, deep:true, note:`This is where the log earns its keep — a consumer that did not exist when the events were published still reads all of them.`},
+      {k:'example', text:`Move to Azure: Service Bus topics with sessions for per-order ordering, deployed to Azure Container Apps with KEDA scaling on queue length, all in Bicep`},
+      {k:'failure', text:`Chaos drill: kill a consumer mid-batch, restart the broker, inject a poison message — and prove nothing was lost or applied twice`, deep:true},
+      {k:'solution', text:`Write up an ADR for each broker choice and a one-page DLQ runbook`},
+      {k:'interview', text:`Present the system in ten minutes and defend every trade-off — the same shape as a system design interview`},
     ]
   },
 ];
@@ -1067,21 +1258,24 @@ const DOTNET_TO_JAVA = [
   ['HttpClient', 'RestClient / WebClient'],
 ];
 
+// One concept per row, across the three platforms this tab teaches side by side.
 const MESSAGING_MAP = [
-  ['Azure Service Bus queue', 'RabbitMQ queue / SQS'],
-  ['Service Bus topic + subscription', 'RabbitMQ topic exchange / SNS'],
-  ['Azure Event Hubs', 'Apache Kafka / Kinesis'],
-  ['Event Hubs consumer group', 'Kafka consumer group'],
-  ['Event Hubs partition + checkpoint', 'Kafka partition + offset'],
-  ['Azure Event Grid', 'Kafka topic fan-out / CloudEvents'],
-  ['Service Bus dead-letter queue', 'Kafka DLT / Rabbit dead-letter exchange'],
-  ['Service Bus sessions', 'Kafka partition key ordering'],
-  ['Service Bus peek-lock + complete', 'Rabbit ack / Kafka offset commit'],
-  ['MassTransit / NServiceBus', 'Spring for Kafka / Spring Cloud Stream'],
-  ['Azure Functions trigger', '@KafkaListener / @RabbitListener'],
-  ['Durable Functions', 'Temporal / Camunda (saga orchestration)'],
-  ['Azure Stream Analytics', 'Kafka Streams / Flink'],
-  ['Schema Registry (Event Hubs)', 'Confluent Schema Registry'],
+  ['Exchange + binding', 'Topic', 'Service Bus topic'],
+  ['Queue', 'Partition, read by one group', 'Service Bus queue or subscription'],
+  ['Routing key / binding key', 'No routing — key picks the partition', 'Subscription SQL or correlation filter'],
+  ['Many consumers on one queue', 'Many consumers in one group', 'Many receivers on one queue'],
+  ['One queue per subscriber', 'One consumer group per subscriber', 'One subscription per subscriber'],
+  ['Manual ack', 'Offset commit', 'Complete (peek-lock) / Event Hubs checkpoint'],
+  ['Nack with requeue', 'Skip the commit and seek back', 'Abandon'],
+  ['Prefetch (QoS)', 'max.poll.records', 'PrefetchCount / MaxConcurrentCalls'],
+  ['Publisher confirms', 'acks=all', 'Awaited SendMessageAsync'],
+  ['Dead-letter exchange', 'Dead-letter topic you build', 'Built-in dead-letter sub-queue'],
+  ['TTL + DLX retry queues', 'Retry topics', 'Scheduled messages'],
+  ['Single active consumer', 'One consumer per partition', 'Sessions'],
+  ['Nothing built in', 'Idempotent producer', 'Duplicate detection'],
+  ['Streams', 'The log itself', 'Event Hubs'],
+  ['Type/version headers', 'Confluent Schema Registry', 'Azure Schema Registry'],
+  ['RabbitMQ.Client', 'Confluent.Kafka', 'Azure.Messaging.ServiceBus / .EventHubs'],
 ];
 
 const PATHS = [
@@ -1113,7 +1307,10 @@ const PATHS = [
     sublabel:'Failure, consistency, consensus',
     kicker:'Distributed systems',
     title:'Distributed Systems',
-    subtitle:'The theory underneath every other tab — partial failure, consistency, replication, consensus, and the patterns that keep a multi-service system correct. Language-neutral.',
+    subtitle:'The theory underneath every other tab — partial failure, consistency, replication, consensus, and the patterns that keep a multi-service system correct. Each phase runs concept → example → failure scenario → solution → interview question, with examples in .NET, Postgres and Azure.',
+    steps:true,
+    // v2: rebuilt around the step loop, so old checkmarks would land on different items.
+    store:'distributed-v2',
     phases:DISTRIBUTED_PHASES,
   },
   {
@@ -1122,17 +1319,23 @@ const PATHS = [
     sublabel:'From one instance to many',
     kicker:'Scaling systems',
     title:'Scaling Systems',
-    subtitle:'Measuring first, then the levers in the order they are usually worth pulling — stateless services, caching, the database ladder, load management, elasticity. Language-neutral.',
+    subtitle:'Measuring first, then the levers in the order they are usually worth pulling — stateless services, caching, the database ladder, load management, elasticity. Each phase runs concept → example → failure scenario → solution → interview question, with examples in .NET, Postgres and Azure.',
+    steps:true,
+    // v2: rebuilt around the step loop, so old checkmarks would land on different items.
+    store:'scaling-v2',
     phases:SCALING_PHASES,
   },
   {
     id:'events',
     label:'Event-Driven',
-    sublabel:'Kafka, patterns, correctness',
+    sublabel:'RabbitMQ, Kafka, Azure',
     kicker:'Event-driven architecture',
     title:'Event-Driven Architecture',
-    subtitle:'Brokers, delivery guarantees, schemas, and the integration patterns — outbox, CDC, saga, CQRS — that make an asynchronous system correct rather than merely asynchronous.',
-    map:{heads:['Azure / .NET', 'Kafka / Java / OSS'], title:'Messaging equivalents', hint:'what you know, in the open-source stack', rows:MESSAGING_MAP},
+    subtitle:'Fifteen steps from “what is an event” to a production .NET system, learned across RabbitMQ, Kafka and Azure at once. Each phase runs the same loop: concept → example → failure scenario → solution → interview question.',
+    map:{heads:['RabbitMQ', 'Kafka', 'Azure'], title:'One concept, three brokers', hint:'the same idea in each platform', rows:MESSAGING_MAP},
+    steps:true,
+    // v2: rebuilt as a 15-phase loop, so old checkmarks would land on different items.
+    store:'events-v2',
     phases:EVENTS_PHASES,
   },
   {
@@ -1225,12 +1428,14 @@ function renderTabs(){
     '</div>' +
   '</div>';
 }
+const STEP_LABELS = {concept:'Concept', example:'Example', failure:'Failure', solution:'Solution', interview:'Interview'};
+
 function renderItem(pathId, item){
   const checked = states[pathId].has(item.id);
   return '<label class="item' + (checked ? ' done' : '') + '">' +
     '<input type="checkbox" class="chk" data-path-id="' + pathId + '" data-id="' + item.id + '"' + (checked ? ' checked' : '') + '>' +
     '<span class="item-body">' +
-      '<span class="item-text">' + esc(item.text) + (item.deep ? ' <span class="pill gold">Deep dive</span>' : '') + '</span>' +
+      '<span class="item-text">' + (item.k ? '<span class="step step-' + item.k + '">' + STEP_LABELS[item.k] + '</span> ' : '') + esc(item.text) + (item.deep ? ' <span class="pill gold">Deep dive</span>' : '') + '</span>' +
       (item.note ? '<span class="item-note">' + esc(item.note) + '</span>' : '') +
     '</span>' +
   '</label>';
@@ -1267,10 +1472,10 @@ function renderMap(path){
   if (!path.map) return '';
   return '<details class="map">' +
     '<summary><span>' + esc(path.map.title) + '</span><span class="map-hint">' + esc(path.map.hint) + '</span></summary>' +
-    '<div class="map-grid">' +
-      '<div class="head">' + esc(path.map.heads[0]) + '</div><div class="head">' + esc(path.map.heads[1]) + '</div>' +
+    '<div class="map-grid" style="grid-template-columns:repeat(' + path.map.heads.length + ',1fr)">' +
+      path.map.heads.map(function(h){ return '<div class="head">' + esc(h) + '</div>'; }).join('') +
       path.map.rows.map(function(r){
-        return '<div>' + esc(r[0]) + '</div><div class="to">' + esc(r[1]) + '</div>';
+        return r.map(function(cell, i){ return '<div' + (i ? ' class="to"' : '') + '>' + esc(cell) + '</div>'; }).join('');
       }).join('') +
     '</div>' +
   '</details>';
@@ -1294,6 +1499,9 @@ function renderPanel(path, i){
       '<div class="legend">' +
         '<span class="legend-item"><span class="pill gold">Core focus</span> phases to slow down on for this stack</span>' +
         '<span class="legend-item"><span class="pill gold">Deep dive</span> topics worth studying beyond the surface</span>' +
+        (path.steps ? '<span class="legend-item">' + Object.keys(STEP_LABELS).map(function(k){
+          return '<span class="step step-' + k + '">' + STEP_LABELS[k] + '</span>';
+        }).join(' ') + ' the loop each phase runs</span>' : '') +
       '</div>' +
     '</header>' +
     renderMap(path) +
